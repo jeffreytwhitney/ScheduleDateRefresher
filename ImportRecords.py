@@ -17,6 +17,8 @@ class ImportRecordWriter:
         self._site_id = site_id
 
     def add_import_record(self, task_name: str, due_date: datetime):
+        task_name = task_name.replace("\"", "").replace("'", "")
+
         existing_records = [record for record in self._records if record.task_name == task_name]
         if not existing_records:
             self._records.append(ImportRecord(task_name, due_date))
@@ -31,12 +33,13 @@ class ImportRecordWriter:
 
     def write_import_records_to_database(self):
         DB.execute_sql_statement("DELETE FROM tblImport WHERE SiteID = {site_id}".format(site_id=self._site_id))
-
         for record in self._records:
-            DB.execute_sql_statement(
-                "INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{task_name}', '{due_date}', {site_id})".format(
-                    task_name=record.task_name,
-                    due_date=record.due_date,
-                    site_id=self._site_id
-                )
+            sql = "INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{task_name}', '{due_date}', {site_id})".format(
+                task_name=record.task_name.replace("\"", "").replace("'", ""),
+                due_date=record.due_date,
+                site_id=self._site_id
             )
+            try:
+                DB.execute_sql_statement(sql)
+            except:
+                pass

@@ -91,6 +91,10 @@ class TaskWriter:
             config.scheduledduedate
         )
 
+    @property
+    def updated_tasks(self) -> List[Task]:
+        return [task for task in self._tasks if task.is_updated]
+
     def get_tasks_by_name(self, task_name: str) -> List[Task]:
         return [task for task in self._tasks if task.taskname == task_name]
 
@@ -102,7 +106,7 @@ class TaskWriter:
         for task in tasks:
             task._duedate = due_date
             task._scheduledduedate = prev_weekday(due_date)
-            self._updated = True
+            task._updated = True
             if task.statusid == 7:
                 task._statusid = 1
 
@@ -110,6 +114,7 @@ class TaskWriter:
 
         for task in self.get_updated_tasks():
             if task.is_updated:
+
                 if task.statusid == 7:
                     sql_statement = "UPDATE tblTask SET DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
                     "WHERE ID = {task_id}".format(
@@ -117,7 +122,6 @@ class TaskWriter:
                         scheduledduedate=task.scheduledduedate,
                         task_id=task.task_id
                     )
-                    DB.execute_sql_statement(sql_statement)
                 else:
                     sql_statement = "UPDATE tblTask SET StatusID = 1, DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
                     "WHERE ID = {task_id}".format(
@@ -125,4 +129,8 @@ class TaskWriter:
                         scheduledduedate=task.scheduledduedate,
                         task_id=task.task_id
                     )
+
+                try:
                     DB.execute_sql_statement(sql_statement)
+                except:
+                    pass
