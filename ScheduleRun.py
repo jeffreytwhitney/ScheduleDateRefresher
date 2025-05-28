@@ -33,7 +33,7 @@ class ScheduleRun:
         if self._run_local:
             self._create_local_run_entry()
 
-        sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0"
+        sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0 AND StartTimestamp IS NULL"
         count = DB.get_sql_scalar(sql)
         self._is_runnable = count > 0
 

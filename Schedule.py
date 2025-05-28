@@ -139,7 +139,7 @@ class Schedule:
 
     @property
     def machine_name(self) -> str:
-        return self._machine_name
+        return str(self._machine_name)
 
     @property
     def is_new_section(self) -> bool:
