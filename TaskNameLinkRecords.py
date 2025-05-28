@@ -25,22 +25,18 @@ class TaskNameLinkRecordWriter:
     def task_name_link_records(self):
         return self._task_name_link_records
 
-
-    @property
-    def task_name_link_records(self):
-        return self._task_name_link_records
-
     def write_task_name_link_records_to_database(self):
         DB.execute_sql_statement("DELETE FROM tblImportMachineName WHERE SiteID = {site_id}".format(site_id=self._site_id))
-        for record in self._task_name_link_records:
-            sql = "INSERT INTO tblImportMachineName (TaskName, LinkedTableNameID, MachineName, SiteID) VALUES ('{task_name}', '{linked_table_name_id}', '{machine_name}', {site_id})".format(
-                    task_name=record.task_name,
-                    linked_table_name_id=record.linked_table_name_id,
-                    machine_name=record.machine_name,
-                    site_id=self._site_id
-                )
-            try:
-                DB.execute_sql_statement(sql)
-            except:
-                pass
+        with DB.DatabaseConnection(False) as db:
+            for record in self._task_name_link_records:
+                sql = "INSERT INTO tblImportMachineName (TaskName, LinkedTableNameID, MachineName, SiteID) VALUES ('{task_name}', '{linked_table_name_id}', '{machine_name}', {site_id})".format(
+                        task_name=record.task_name,
+                        linked_table_name_id=record.linked_table_name_id,
+                        machine_name=record.machine_name,
+                        site_id=self._site_id
+                    )
+                try:
+                    db.execute_statement(sql)
+                except:
+                    pass
 

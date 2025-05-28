@@ -33,13 +33,15 @@ class ImportRecordWriter:
 
     def write_import_records_to_database(self):
         DB.execute_sql_statement("DELETE FROM tblImport WHERE SiteID = {site_id}".format(site_id=self._site_id))
-        for record in self._records:
-            sql = "INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{task_name}', '{due_date}', {site_id})".format(
-                task_name=record.task_name.replace("\"", "").replace("'", ""),
-                due_date=record.due_date,
-                site_id=self._site_id
-            )
-            try:
-                DB.execute_sql_statement(sql)
-            except:
-                pass
+        with DB.DatabaseConnection(False) as db:
+            for record in self._records:
+                sql = "INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{task_name}', '{due_date}', {site_id})".format(
+                    task_name=record.task_name.replace("\"", "").replace("'", ""),
+                    due_date=record.due_date,
+                    site_id=self._site_id
+                )
+                try:
+                    db.execute_statement(sql)
+                except:
+                    pass
+

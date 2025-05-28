@@ -111,26 +111,26 @@ class TaskWriter:
                 task._statusid = 1
 
     def write_updated_tasks_to_database(self) -> None:
+        with DB.DatabaseConnection(False) as db:
+            for task in self.get_updated_tasks():
+                if task.is_updated:
 
-        for task in self.get_updated_tasks():
-            if task.is_updated:
+                    if task.statusid == 7:
+                        sql_statement = "UPDATE tblTask SET DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
+                        "WHERE ID = {task_id}".format(
+                            due_date=task.duedate,
+                            scheduledduedate=task.scheduledduedate,
+                            task_id=task.task_id
+                        )
+                    else:
+                        sql_statement = "UPDATE tblTask SET StatusID = 1, DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
+                        "WHERE ID = {task_id}".format(
+                            due_date=task.duedate,
+                            scheduledduedate=task.scheduledduedate,
+                            task_id=task.task_id
+                        )
 
-                if task.statusid == 7:
-                    sql_statement = "UPDATE tblTask SET DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
-                    "WHERE ID = {task_id}".format(
-                        due_date=task.duedate,
-                        scheduledduedate=task.scheduledduedate,
-                        task_id=task.task_id
-                    )
-                else:
-                    sql_statement = "UPDATE tblTask SET StatusID = 1, DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
-                    "WHERE ID = {task_id}".format(
-                        due_date=task.duedate,
-                        scheduledduedate=task.scheduledduedate,
-                        task_id=task.task_id
-                    )
-
-                try:
-                    DB.execute_sql_statement(sql_statement)
-                except:
-                    pass
+                    try:
+                        db.execute_statement(sql_statement)
+                    except:
+                        pass

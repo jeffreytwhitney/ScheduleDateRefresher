@@ -47,7 +47,7 @@ class Schedule:
         sheetname = self._schedule_info.sheet_name
         partnumber_address = self._schedule_info.starting_cell_address
         completion_offset = self._schedule_info.completion_date_cell_offset
-        self._valid_part_delimiters = self._schedule_info.task_name_delimiter.split(', ')
+        self._valid_part_delimiters = self._schedule_info.task_name_delimiter.upper().split(', ')
 
         if not os.path.isfile(filepath):
             raise ScheduleFileNotFoundError(self._schedule_info.file_path)
@@ -74,6 +74,10 @@ class Schedule:
             machine_name_cell = self._partnumber_cell.offset(machine_offset_up, machine_offset_left)
             self._machine_name = machine_name_cell.value
         else:
+            if self._workbook:
+                self._workbook.close()
+            if self._excel_application:
+                self._excel_application.quit()
             raise ScheduleBadHeadersError(self._schedule_info.file_path)
 
     @property
@@ -83,7 +87,7 @@ class Schedule:
         if self._partnumber_cell.value is None:
             return ""
         if self._schedule_info.do_part_name_trimming:
-            return part_number_value.split(' ')[0].strip()
+            return part_number_value.split(' ')[0].upper().strip()
 
         return part_number_value
 
@@ -126,7 +130,8 @@ class Schedule:
 
     @property
     def is_part_number_delimiter(self) -> bool:
-        return self._partnumber_cell.value in self._valid_part_delimiters
+        part_number_value = str(self._partnumber_cell.value).upper().strip()
+        return part_number_value in self._valid_part_delimiters
 
     @property
     def is_completion_date_delimiter(self) -> bool:

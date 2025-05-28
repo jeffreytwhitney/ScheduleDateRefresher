@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, time
 
 import DB
+import INIConfig
 
 
 @dataclass
@@ -17,8 +18,21 @@ class ScheduleRunConfig:
 
 
 class ScheduleRun:
+    _is_runnable: bool = False
+    _run_local: bool = False
+    _run_local_employee_number: str = ""
+    _site_id: int = 0
+    _schedule_run_config: ScheduleRunConfig = None
+
     def __init__(self, site_id: int):
         self._site_id = site_id
+        run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
+        self._run_local = run_local_integer > 0
+        self._run_local_employee_number = str(INIConfig.GetStoredIniValue("RunLocal", "run_as_employee_number", "ScheduleImporter"))
+
+        if self._run_local:
+            self._create_local_run_entry()
+
         sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0"
         count = DB.get_sql_scalar(sql)
         self._is_runnable = count > 0
@@ -66,8 +80,11 @@ class ScheduleRun:
         sql: str = f"Update dbo.tblScheduleRunEntry set StartTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}' where ID = {self._schedule_run_config.schedule_run_id}"
         DB.execute_sql_statement(sql)
 
-    def complete_run(self) -> None:
-        sql: str = f"Update dbo.tblScheduleRunEntry set CompletionTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}', IsComplete = 1 where ID = {self._schedule_run_config.schedule_run_id}"
+    def complete_run(self, error_count: int = 0) -> None:
+        sql: str = f"Update dbo.tblScheduleRunEntry set CompletionTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}', IsComplete = 1, HasErrors = {error_count} where ID = {self._schedule_run_config.schedule_run_id}"
+        DB.execute_sql_statement(sql)
+        if not self._run_local:
+            self._create_automated_run_entry()
 
     def _get_schedule_run_config(self):
         sql: str = f"Select * from dbo.qryUncompletedScheduleRunTimes where SiteID = {self._site_id} AND IsComplete = 0 order by ID"
@@ -81,3 +98,31 @@ class ScheduleRun:
             record['RequesterName'],
             record['IsAutomated'],
             record['IsComplete'])
+
+    def _create_local_run_entry(self):
+        create_datetime = datetime.now() - timedelta(minutes=1)
+        sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, RequestUserEmployeeNumber, IsAutomated) values ({self._site_id}, '{create_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '{self._run_local_employee_number}', 0)"
+        DB.execute_sql_statement(sql)
+
+    def _create_automated_run_entry(self):
+        create_datetime = self._generate_new_run_datetime()
+        sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, IsAutomated) values ({self._site_id}, '{create_datetime}', 1)"
+
+    def _generate_new_run_datetime(self):
+        current_time = datetime.now().time()
+        current_date = datetime.now().date()
+        next_run_time: time = current_time
+        sql: str = "Select RunTime from tblScheduleRunTimes where SiteID = {site_id} order by RunTime".format(site_id=self._site_id)
+        runtimes = DB.get_sql_recordset(sql)
+        for r in runtimes:
+            run_time = r["RunTime"]
+            if run_time > current_time:
+                next_run_time = run_time
+                break
+
+        if next_run_time > current_time:
+            return datetime.combine(current_date, next_run_time).strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            run_time = runtimes[0]["RunTime"]
+            current_date += timedelta(days=1)
+            return datetime.combine(current_date, run_time).strftime("%Y-%m-%d %H:%M:%S")

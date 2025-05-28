@@ -26,15 +26,15 @@ class TaskIDLinkRecordWriter:
 
     def write_task_id_link_records_to_database(self):
         DB.execute_sql_statement("DELETE FROM tblTaskScheduleData WHERE SiteID = {site_id}".format(site_id=self._site_id))
-
-        for record in self._task_id_link_records:
-            sql = "INSERT INTO tblTaskScheduleData (TaskID, LinkedTableNameID, MachineName, SiteID) VALUES ({task_id}, {linked_table_name_id}, '{machine_name}', {site_id})".format(
-                task_id=record.task_id,
-                linked_table_name_id=record.linked_table_name_id,
-                machine_name=record.machine_name,
-                site_id=self._site_id
-            )
-            try:
-                DB.execute_sql_statement(sql)
-            except:
-                print(f"Error executing SQL statement: {sql}")
+        with DB.DatabaseConnection(False) as db:
+            for record in self._task_id_link_records:
+                sql = "INSERT INTO tblTaskScheduleData (TaskID, LinkedTableNameID, MachineName, SiteID) VALUES ({task_id}, {linked_table_name_id}, '{machine_name}', {site_id})".format(
+                    task_id=record.task_id,
+                    linked_table_name_id=record.linked_table_name_id,
+                    machine_name=record.machine_name,
+                    site_id=self._site_id
+                )
+                try:
+                    db.execute_statement(sql)
+                except:
+                    print(f"Error executing SQL statement: {sql}")
