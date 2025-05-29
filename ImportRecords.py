@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 import DB
+from Logger import Logger
 
 
 @dataclass
@@ -15,6 +16,7 @@ class ImportRecordWriter:
     def __init__(self, site_id: int):
         self._records: List[ImportRecord] = []
         self._site_id = site_id
+        self._logger = Logger()
 
     def add_import_record(self, task_name: str, due_date: datetime):
         task_name = task_name.replace("\"", "").replace("'", "")
@@ -33,15 +35,11 @@ class ImportRecordWriter:
 
     def write_import_records_to_database(self):
         DB.execute_sql_statement("DELETE FROM tblImport WHERE SiteID = {site_id}".format(site_id=self._site_id))
-        with DB.DatabaseConnection(False) as db:
+        with (DB.DatabaseConnection(False) as db):
             for record in self._records:
-                sql = "INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{task_name}', '{due_date}', {site_id})".format(
-                    task_name=record.task_name.replace("\"", "").replace("'", ""),
-                    due_date=record.due_date,
-                    site_id=self._site_id
-                )
+                formatted_task_name = record.task_name.replace("\"", "").replace("'", "")
+                sql = f"INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{formatted_task_name}', '{record.due_date}', {self._site_id}"
                 try:
                     db.execute_statement(sql)
-                except:
-                    pass
-
+                except Exception as e:
+                    self._logger.log_error(f"Database error while updating Import Record. SQL statement: {sql}")

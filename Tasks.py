@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 from typing import List
 
 import DB
+from Logger import Logger
 
 
 def prev_weekday(adate):
     adate -= timedelta(days=1)
-    while adate.weekday() > 4:  # Mon-Fri are 0-4
+    while adate.weekday() > 4:
         adate -= timedelta(days=1)
     return adate
 
@@ -62,10 +63,12 @@ class Task:
 
 
 class TaskWriter:
+
     def __init__(self, site_id: int):
         self._updated = None
         self._site_id = site_id
         self._tasks = self._get_tasks()
+        self._logger = Logger()
 
     def _get_tasks(self) -> List[Task]:
         ACTIVE_TASKS_QUERY = "SELECT * FROM qryTaskList WHERE ManualDueDate = 0 AND StatusID Not In (4,5) AND SiteID = {site_id}"
@@ -102,35 +105,36 @@ class TaskWriter:
         return [task for task in self._tasks if task.is_updated]
 
     def update_dates_by_taskname(self, task_name: str, due_date: datetime) -> None:
+        due_date_not_time = due_date.strftime("%m/%d/%Y")
+
         tasks = self.get_tasks_by_name(task_name)
         for task in tasks:
-            task._duedate = due_date
+            if task.duedate == due_date_not_time:
+                # task already has the same date, no need to update it
+                continue
+
+            task._duedate = due_date.strftime("%m/%d/%Y")
             task._scheduledduedate = prev_weekday(due_date)
             task._updated = True
             if task.statusid == 7:
                 task._statusid = 1
 
     def write_updated_tasks_to_database(self) -> None:
+
         with DB.DatabaseConnection(False) as db:
             for task in self.get_updated_tasks():
                 if task.is_updated:
-
                     if task.statusid == 7:
-                        sql_statement = "UPDATE tblTask SET DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
-                        "WHERE ID = {task_id}".format(
-                            due_date=task.duedate,
-                            scheduledduedate=task.scheduledduedate,
-                            task_id=task.task_id
-                        )
+                        sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                        try:
+                            db.execute_statement(sql_statement)
+                        except Exception as e:
+                            self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
                     else:
-                        sql_statement = "UPDATE tblTask SET StatusID = 1, DueDate = '{due_date}', ScheduledDueDate = '{scheduledduedate}' "
-                        "WHERE ID = {task_id}".format(
-                            due_date=task.duedate,
-                            scheduledduedate=task.scheduledduedate,
-                            task_id=task.task_id
-                        )
+                        sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                        try:
+                            db.execute_statement(sql_statement)
+                        except Exception as e:
+                            self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
 
-                    try:
-                        db.execute_statement(sql_statement)
-                    except:
-                        pass
+
