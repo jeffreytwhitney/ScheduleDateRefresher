@@ -80,8 +80,8 @@ class ScheduleRun:
         sql: str = f"Update dbo.tblScheduleRunEntry set StartTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}' where ID = {self._schedule_run_config.schedule_run_id}"
         DB.execute_sql_statement(sql)
 
-    def complete_run(self, error_count: int = 0) -> None:
-        sql: str = f"Update dbo.tblScheduleRunEntry set CompletionTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}', IsComplete = 1, HasErrors = {error_count} where ID = {self._schedule_run_config.schedule_run_id}"
+    def complete_run(self, error_count: int = 0, updated_task_count: int = 0) -> None:
+        sql: str = f"Update dbo.tblScheduleRunEntry set CompletionTimestamp = '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}', IsComplete = 1, HasErrors = {error_count}, TasksUpdated = {updated_task_count} where ID = {self._schedule_run_config.schedule_run_id}"
         DB.execute_sql_statement(sql)
         if not self._run_local:
             self._create_automated_run_entry()

@@ -38,7 +38,7 @@ class ImportRecordWriter:
         with (DB.DatabaseConnection(False) as db):
             for record in self._records:
                 formatted_task_name = record.task_name.replace("\"", "").replace("'", "")
-                sql = f"INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{formatted_task_name}', '{record.due_date}', {self._site_id}"
+                sql = f"INSERT INTO tblImport (TaskName, DueDate, SiteID) VALUES ('{formatted_task_name}', '{record.due_date}', {self._site_id})"
                 try:
                     db.execute_statement(sql)
                 except Exception as e:

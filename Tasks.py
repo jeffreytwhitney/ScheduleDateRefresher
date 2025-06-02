@@ -81,8 +81,8 @@ class TaskWriter:
             projectid=record['ProjectID'],
             statusid=record['StatusID'],
             taskname=record['TaskName'],
-            duedate=record['DueDate'],
-            scheduledduedate=record['ScheduledDueDate']
+            duedate=datetime.strptime(record['DueDate'], "%m/%d/%y"),
+            scheduledduedate=datetime.strptime(record['ScheduledDueDate'], "%m/%d/%y")
         )
 
         return Task(
@@ -104,17 +104,16 @@ class TaskWriter:
     def get_updated_tasks(self) -> List[Task]:
         return [task for task in self._tasks if task.is_updated]
 
-    def update_dates_by_taskname(self, task_name: str, due_date: datetime) -> None:
-        due_date_not_time = due_date.strftime("%m/%d/%Y")
+    def update_dates_by_taskname(self, task_name: str, xl_due_date: datetime) -> None:
 
         tasks = self.get_tasks_by_name(task_name)
         for task in tasks:
-            if task.duedate == due_date_not_time:
+            if task.scheduledduedate == xl_due_date:
                 # task already has the same date, no need to update it
                 continue
 
-            task._duedate = due_date.strftime("%m/%d/%Y")
-            task._scheduledduedate = prev_weekday(due_date)
+            task._scheduledduedate = xl_due_date
+            task._duedate = prev_weekday(xl_due_date)
             task._updated = True
             if task.statusid == 7:
                 task._statusid = 1

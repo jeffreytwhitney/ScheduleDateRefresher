@@ -42,7 +42,11 @@ def process_schedules():
             logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
         except Schedule.ScheduleFileNotFoundError:
             error_count += 1
-            error_message = f"Could not find file for schedule {schedule_info.schedule_id}."
+            error_message = f"Could not find file for schedule {schedule_info.import_name}."
+            logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
+        except Exception:
+            error_count += 1
+            error_message = f"Processing error for schedule {schedule_info.import_name}."
             logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
 
     task_id_link_writer = TaskIDLinkRecordWriter(site_id)
@@ -70,10 +74,12 @@ def process_schedules():
     task_writer_count = len(task_writer.updated_tasks)
     logger.log_message(f"Updating {task_writer_count} task records")
     task_writer.write_updated_tasks_to_database()
-
-    schedule_run.complete_run(error_count)
+    schedule_run.complete_run(error_count, task_writer_count)
     logger.log_message("Done processing schedules.")
 
 
 if __name__ == '__main__':
     process_schedules()
+    run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
+    if run_local_integer > 0:
+        input("Press Enter to exit...")

@@ -31,13 +31,23 @@ class Logger:
     _log_file_name: str
     _log_file_max_line_count: int
     _log_writer: LogWriter
+    _initialized = False
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Logger, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(self):
-        self._log_to_screen = bool(INIConfig.GetStoredIniValue("Logging", "log_to_screen", "ScheduleImporter"))
-        self._log_to_file = bool(INIConfig.GetStoredIniValue("Logging", "log_to_file", "ScheduleImporter"))
-        self._log_file_name = INIConfig.GetStoredIniValue("Logging", "log_file_name", "ScheduleImporter")
-        self._log_file_max_line_count = int(INIConfig.GetStoredIniValue("Logging", "log_file_max_line_count", "ScheduleImporter"))
-        self._log_writer = LogWriter(self._log_file_name, self._log_file_max_line_count)
+        if not self._initialized:
+            print("Initializing Logger...")
+            self._log_to_screen = bool(INIConfig.GetStoredIniValue("Logging", "log_to_screen", "ScheduleImporter"))
+            self._log_to_file = bool(INIConfig.GetStoredIniValue("Logging", "log_to_file", "ScheduleImporter"))
+            self._log_file_name = INIConfig.GetStoredIniValue("Logging", "log_file_name", "ScheduleImporter")
+            self._log_file_max_line_count = int(INIConfig.GetStoredIniValue("Logging", "log_file_max_line_count", "ScheduleImporter"))
+            self._log_writer = LogWriter(self._log_file_name, self._log_file_max_line_count)
+            self._initialized = True
 
     def log_error(self, error_message: str):
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
