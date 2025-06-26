@@ -101,6 +101,8 @@ class ScheduleRun:
 
     def _create_local_run_entry(self):
         create_datetime = datetime.now() - timedelta(minutes=1)
+        sql: str = f"Update dbo.tblScheduleRunEntry Set IsComplete = 1 WHERE SiteID = {self._site_id} AND IsComplete = 0"
+        DB.execute_sql_statement(sql)
         sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, RequestUserEmployeeNumber, IsAutomated) values ({self._site_id}, '{create_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '{self._run_local_employee_number}', 0)"
         DB.execute_sql_statement(sql)
 

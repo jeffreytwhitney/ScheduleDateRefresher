@@ -1,3 +1,8 @@
+import os
+
+import psutil
+import win32com.client
+
 import INIConfig
 import Schedule
 import ScheduleInfo
@@ -8,6 +13,25 @@ from ScheduleRun import ScheduleRun
 from TaskIDLinkRecords import TaskIDLinkRecordWriter
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
+
+
+def _is_excel_running():
+    for process in psutil.process_iter(['name']):
+        if process.info['name'] and 'EXCEL' in process.info['name'].upper():
+            return True
+    return False
+
+
+def _force_close_excel():
+    try:
+        # Connect to any running Excel application
+        excel = win32com.client.Dispatch("Excel.Application")
+        excel.Quit()  # Gracefully close Excel
+    except Exception as e:
+        print(f"Error while closing Excel: {e}")
+
+    # Forcefully terminate Excel processes if still running
+    os.system("taskkill /f /im excel.exe")
 
 
 def process_schedules():
@@ -79,7 +103,17 @@ def process_schedules():
 
 
 if __name__ == '__main__':
-    process_schedules()
+    excel_is_running = _is_excel_running()
     run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
+
+    if excel_is_running:
+        if run_local_integer > 0:
+            input("You have Microsoft Excel already running. This can have unintended consequences. To continue, hit enter to quit this program, close Excel, and run this program again.")
+            quit()
+        else:
+            _force_close_excel()
+
+    process_schedules()
+
     if run_local_integer > 0:
         input("Press Enter to exit...")
