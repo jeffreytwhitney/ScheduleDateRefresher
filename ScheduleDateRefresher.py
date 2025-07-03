@@ -81,6 +81,8 @@ def process_schedules():
     for task_name_link_record in task_name_link_writer.task_name_link_records:
         tasks = task_writer.get_tasks_by_name(task_name_link_record.task_name)
         for task in tasks:
+            if task_name_link_record.is_currently_running:
+                task.is_currently_running = True
             task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
 
     import_record_count = len(import_record_writer.import_records)
@@ -97,6 +99,7 @@ def process_schedules():
 
     task_writer_count = len(task_writer.updated_tasks)
     logger.log_message(f"Updating {task_writer_count} task records")
+    task_writer.write_currently_running_tasks_to_database()
     task_writer.write_updated_tasks_to_database()
     schedule_run.complete_run(error_count, task_writer_count)
     logger.log_message("Done processing schedules.")

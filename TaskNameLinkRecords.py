@@ -10,6 +10,7 @@ class TaskNameLinkRecord:
     task_name: str
     linked_table_name_id: int
     machine_name: str
+    is_currently_running: bool
 
 
 class TaskNameLinkRecordWriter:
@@ -18,10 +19,10 @@ class TaskNameLinkRecordWriter:
         self._site_id = site_id
         self._logger = Logger()
 
-    def add_task_name_link_record(self, task_name: str, linked_table_name_id: int, machine_name: str):
+    def add_task_name_link_record(self, task_name: str, linked_table_name_id: int, machine_name: str, currently_running: bool):
         task_name = task_name.replace("\"", "").replace("'", "")
         machine_name = machine_name.replace("\"", "").replace("'", "")
-        self._task_name_link_records.append(TaskNameLinkRecord(task_name, linked_table_name_id, machine_name))
+        self._task_name_link_records.append(TaskNameLinkRecord(task_name, linked_table_name_id, machine_name, currently_running))
 
     @property
     def task_name_link_records(self):

@@ -53,7 +53,10 @@ class ScheduleProcessor:
 
             previous_task_name = current_task_name
 
-            self._task_name_link_record_writer.add_task_name_link_record(current_task_name, self._schedule.schedule_id, machine_name)
+            if previous_completion_date is not None:
+                self._task_name_link_record_writer.add_task_name_link_record(current_task_name, self._schedule.schedule_id, machine_name, False)
+            else:
+                self._task_name_link_record_writer.add_task_name_link_record(current_task_name, self._schedule.schedule_id, machine_name, True)
 
             if previous_completion_date is not None:
                 self._import_record_writer.add_import_record(current_task_name, previous_completion_date)

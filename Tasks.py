@@ -23,6 +23,7 @@ class Task:
     _datestarted: datetime
     _updatedtimestamp: datetime
     _updateuserid: str
+    _currently_running: bool = False
 
     def __init__(self, iid: int, projectid: int, statusid: int, taskname: str, duedate: datetime,
                  scheduledduedate: datetime):
@@ -36,6 +37,14 @@ class Task:
     @property
     def task_id(self) -> int:
         return self._id
+
+    @property
+    def is_currently_running(self) -> bool:
+        return self._currently_running
+
+    @is_currently_running.setter
+    def is_currently_running(self, value: bool) -> None:
+        self._currently_running = value
 
     @property
     def is_updated(self) -> bool:
@@ -98,8 +107,15 @@ class TaskWriter:
     def updated_tasks(self) -> List[Task]:
         return [task for task in self._tasks if task.is_updated]
 
+    @property
+    def currently_running_tasks(self) -> List[Task]:
+        return [task for task in self._tasks if task.is_currently_running]
+
     def get_tasks_by_name(self, task_name: str) -> List[Task]:
         return [task for task in self._tasks if task.taskname == task_name]
+
+    def get_currently_running_tasks(self) -> List[Task]:
+        return [task for task in self._tasks if task.is_currently_running]
 
     def get_updated_tasks(self) -> List[Task]:
         return [task for task in self._tasks if task.is_updated]
@@ -118,22 +134,30 @@ class TaskWriter:
             if task.statusid == 7:
                 task._statusid = 1
 
+    def write_currently_running_tasks_to_database(self) -> None:
+        with DB.DatabaseConnection(False) as db:
+            sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 0"
+            db.execute_statement(sql_statement)
+            for task in self.get_currently_running_tasks():
+                sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 1 WHERE ID = {task.task_id}"
+                try:
+                    db.execute_statement(sql_statement)
+                except Exception as e:
+                    self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
+
     def write_updated_tasks_to_database(self) -> None:
 
         with DB.DatabaseConnection(False) as db:
             for task in self.get_updated_tasks():
-                if task.is_updated:
-                    if task.statusid == 7:
-                        sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
-                        try:
-                            db.execute_statement(sql_statement)
-                        except Exception as e:
-                            self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
-                    else:
-                        sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
-                        try:
-                            db.execute_statement(sql_statement)
-                        except Exception as e:
-                            self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
-
-
+                if task.statusid == 7:
+                    sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                    try:
+                        db.execute_statement(sql_statement)
+                    except Exception as e:
+                        self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
+                else:
+                    sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                    try:
+                        db.execute_statement(sql_statement)
+                    except Exception as e:
+                        self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")

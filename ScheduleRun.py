@@ -1,8 +1,16 @@
+import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, time
 
 import DB
 import INIConfig
+
+
+def get_local_user_id() -> str:
+    username = os.getlogin().upper()
+    sql = f"Select EmployeeNumber from tblUser where IsActive = 1 and NetworkUserName = '{username}'"
+    user_id = str(DB.get_sql_scalar(sql))
+    return user_id
 
 
 @dataclass
@@ -28,9 +36,9 @@ class ScheduleRun:
         self._site_id = site_id
         run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
         self._run_local = run_local_integer > 0
-        self._run_local_employee_number = str(INIConfig.GetStoredIniValue("RunLocal", "run_as_employee_number", "ScheduleImporter"))
 
         if self._run_local:
+            self._run_local_employee_number = get_local_user_id()
             self._create_local_run_entry()
 
         sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0 AND StartTimestamp IS NULL"
