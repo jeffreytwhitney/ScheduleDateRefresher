@@ -134,6 +134,11 @@ class TaskWriter:
             if task.statusid == 7:
                 task._statusid = 1
 
+    def update_db_auto_not_scheduled(self):
+        with DB.DatabaseConnection(False) as db:
+            sql_statement = f"UPDATE dbo.tblTask SET tblTask.StatusID = 7 FROM tblProject RIGHT OUTER JOIN tblTask ON tblProject.ID = dbo.tblTask.ProjectID WHERE tblTask.StatusID = 1 AND dbo.tblProject.SiteID = {self._site_id} AND dbo.tblTask.ManualDueDate = 0 AND NOT dbo.tblTask.TaskName IN (SELECT TaskName FROM dbo.tblImportMachineName WHERE SiteID = {self._site_id})"
+            db.execute_statement(sql_statement)
+
     def write_currently_running_tasks_to_database(self) -> None:
         with DB.DatabaseConnection(False) as db:
             sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 0"

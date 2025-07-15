@@ -34,7 +34,7 @@ class ScheduleRun:
 
     def __init__(self, site_id: int):
         self._site_id = site_id
-        run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
+        run_local_integer = int(INIConfig.GetStoredIniValue("Switches", "run_local", "ScheduleImporter"))
         self._run_local = run_local_integer > 0
 
         if self._run_local:

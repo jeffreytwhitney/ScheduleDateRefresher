@@ -40,6 +40,7 @@ def process_schedules():
     logger.log_message(f"Starting run")
 
     site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
+    auto_not_scheduled = int(INIConfig.GetStoredIniValue("Switches", "auto_not_scheduled", "ScheduleImporter"))
     schedule_run = ScheduleRun(site_id)
     runnable = schedule_run.is_runnable
     if not runnable:
@@ -101,13 +102,18 @@ def process_schedules():
     logger.log_message(f"Updating {task_writer_count} task records")
     task_writer.write_currently_running_tasks_to_database()
     task_writer.write_updated_tasks_to_database()
+
+    if auto_not_scheduled == 1:
+        logger.log_message(f"Setting tasks not in schedules to 'Not Scheduled'")
+        task_writer.update_db_auto_not_scheduled()
+
     schedule_run.complete_run(error_count, task_writer_count)
     logger.log_message("Done processing schedules.")
 
 
 if __name__ == '__main__':
     excel_is_running = _is_excel_running()
-    run_local_integer = int(INIConfig.GetStoredIniValue("RunLocal", "run_local", "ScheduleImporter"))
+    run_local_integer = int(INIConfig.GetStoredIniValue("Switches", "run_local", "ScheduleImporter"))
 
     if excel_is_running:
         if run_local_integer > 0:
