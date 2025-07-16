@@ -121,18 +121,18 @@ class TaskWriter:
         return [task for task in self._tasks if task.is_updated]
 
     def update_dates_by_taskname(self, task_name: str, xl_due_date: datetime) -> None:
+        if task_name == "49-20-01-2":
+            pass
 
         tasks = self.get_tasks_by_name(task_name)
         for task in tasks:
-            if task.scheduledduedate == xl_due_date:
+            if task.scheduledduedate == xl_due_date and task.statusid != 7:
                 # task already has the same date, no need to update it
                 continue
 
             task._scheduledduedate = xl_due_date
             task._duedate = prev_weekday(xl_due_date)
             task._updated = True
-            if task.statusid == 7:
-                task._statusid = 1
 
     def update_db_auto_not_scheduled(self):
         with DB.DatabaseConnection(False) as db:

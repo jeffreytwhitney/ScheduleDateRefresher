@@ -103,7 +103,7 @@ def process_schedules():
     task_writer.write_currently_running_tasks_to_database()
     task_writer.write_updated_tasks_to_database()
 
-    if auto_not_scheduled == 1:
+    if auto_not_scheduled == 1 and task_link_record_count > 0:
         logger.log_message(f"Setting tasks not in schedules to 'Not Scheduled'")
         task_writer.update_db_auto_not_scheduled()
 
