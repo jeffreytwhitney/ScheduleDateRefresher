@@ -117,6 +117,7 @@ class ScheduleRun:
     def _create_automated_run_entry(self):
         create_datetime = self._generate_new_run_datetime()
         sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, IsAutomated) values ({self._site_id}, '{create_datetime}', 1)"
+        DB.execute_sql_statement(sql)
 
     def _generate_new_run_datetime(self):
         current_time = datetime.now().time()

@@ -144,7 +144,10 @@ class TaskWriter:
             sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 0"
             db.execute_statement(sql_statement)
             for task in self.get_currently_running_tasks():
-                sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 1 WHERE ID = {task.task_id}"
+                if task.statusid == 7:
+                    sql_statement = f"UPDATE tblTask SET StatusID = 1, CurrentlyRunning = 1 WHERE ID = {task.task_id}"
+                else:
+                    sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 1 WHERE ID = {task.task_id}"
                 try:
                     db.execute_statement(sql_statement)
                 except Exception as e:
