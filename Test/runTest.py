@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import DB
 import INIConfig
 import ScheduleInfo
@@ -10,6 +12,17 @@ from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
 
 
+def run_just_schedule_run():
+
+    create_datetime = datetime.now() - timedelta(minutes=1)
+    sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, RequestUserEmployeeNumber, IsAutomated) values (1, '{create_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '4404', 0)"
+    DB.execute_sql_statement(sql)
+
+    schedule_run = ScheduleRun(1)
+    schedule_run.start_run()
+    schedule_run.complete_run()
+
+
 def run_test():
     site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
     schedule_run = ScheduleRun(site_id)
@@ -19,7 +32,7 @@ def run_test():
     import_record_writer = ImportRecordWriter(site_id)
     task_name_link_writer = TaskNameLinkRecordWriter(site_id)
 
-    schedule_info = [info for info in schedule_info_records if info.import_name == 'MILLING 1']
+    schedule_info = [info for info in schedule_info_records if info.import_name == 'Pacing Wires']
     xlschedule = Schedule(schedule_info[0])
     processor = ScheduleProcessor(site_id, schedule_run, xlschedule, import_record_writer, task_name_link_writer)
     processor.process_schedule()
@@ -39,5 +52,7 @@ def run_test():
 
     xlschedule.close()
 
+
 if __name__ == '__main__':
-    run_test()
+    #run_test()
+    run_just_schedule_run()

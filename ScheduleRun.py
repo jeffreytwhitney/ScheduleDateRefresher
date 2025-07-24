@@ -41,7 +41,7 @@ class ScheduleRun:
             self._run_local_employee_number = get_local_user_id()
             self._create_local_run_entry()
 
-        sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0 AND StartTimestamp IS NULL"
+        sql: str = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} AND IsComplete = 0 AND StartTimestamp IS NULL AND RunDateTime < GetDate()"
         count = DB.get_sql_scalar(sql)
         self._is_runnable = count > 0
 
@@ -116,8 +116,13 @@ class ScheduleRun:
 
     def _create_automated_run_entry(self):
         create_datetime = self._generate_new_run_datetime()
-        sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, IsAutomated) values ({self._site_id}, '{create_datetime}', 1)"
-        DB.execute_sql_statement(sql)
+        sql: str = ""
+        sql = f"Select Count(*) from dbo.tblScheduleRunEntry where SiteID = {self._site_id} and IsAutomated = 1 and IsComplete = 0 and StartTimestamp Is Null and RunDateTime = '{create_datetime}'"
+        count_of_runs = int(DB.get_sql_scalar(sql))
+
+        if count_of_runs == 0:
+            sql = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, IsAutomated) values ({self._site_id}, '{create_datetime}', 1)"
+            DB.execute_sql_statement(sql)
 
     def _generate_new_run_datetime(self):
         current_time = datetime.now().time()

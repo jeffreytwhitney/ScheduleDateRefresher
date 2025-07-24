@@ -756,3 +756,4 @@ DATE/TIME: 2025-07-17 05:12:40.     MESSAGE: Writing 99 task id link records to 
 DATE/TIME: 2025-07-17 05:12:41.     MESSAGE: Updating 58 task records
 DATE/TIME: 2025-07-17 05:12:43.     MESSAGE: Setting tasks not in schedules to 'Not Scheduled'
 DATE/TIME: 2025-07-17 05:12:43.     MESSAGE: Done processing schedules.
+DATE/TIME: 2025-07-17 14:04:27.     MESSAGE: Starting run
