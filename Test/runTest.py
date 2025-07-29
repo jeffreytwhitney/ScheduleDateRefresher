@@ -23,6 +23,11 @@ def run_just_schedule_run():
     schedule_run.complete_run()
 
 
+def run_auto_not_scheduled():
+    task_writer = TaskWriter(1)
+    task_writer.update_db_auto_not_scheduled()
+
+
 def run_test():
     site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
     schedule_run = ScheduleRun(site_id)
@@ -55,4 +60,5 @@ def run_test():
 
 if __name__ == '__main__':
     #run_test()
-    run_just_schedule_run()
+    #run_just_schedule_run()
+    run_auto_not_scheduled()
