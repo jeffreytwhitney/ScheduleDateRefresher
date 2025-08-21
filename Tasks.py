@@ -14,6 +14,31 @@ def prev_weekday(adate):
 
 
 class Task:
+    """
+    Represents a task within a project management system.
+
+    This class is used to define the properties and status of a task. It includes
+    information such as the task's ID, associated project ID, status ID, task name,
+    due date, and whether the task is currently running or updated. It provides
+    properties to safely access these attributes.
+
+    :ivar task_id: Unique identifier for the task.
+    :type task_id: int
+    :ivar is_currently_running: Indicates if the task is currently running.
+    :type is_currently_running: bool
+    :ivar is_updated: Indicates whether the task's information has been updated.
+    :type is_updated: bool
+    :ivar projectid: Identifier of the project to which the task belongs.
+    :type projectid: int
+    :ivar statusid: Status ID representing the current status of the task.
+    :type statusid: int
+    :ivar taskname: Name of the task.
+    :type taskname: str
+    :ivar duedate: Due date of the task.
+    :type duedate: datetime
+    :ivar scheduledduedate: Scheduled due date of the task.
+    :type scheduledduedate: datetime
+    """
     _updated: bool = False
     _id: int
     _projectid: int
@@ -73,6 +98,14 @@ class Task:
 
 
 class TaskWriter:
+    """
+    Handles the management, manipulation, and updating of task objects for a specific site.
+
+    Provides functionality to interact with a set of tasks, which includes filtering,
+    retrieving, and updating tasks based on specific criteria. The class also handles
+    the synchronization of task data with the database, ensuring that any changes
+    ```arepython reflected
+     persist"""
     _automated_user_id: str
 
     def __init__(self, site_id: int):

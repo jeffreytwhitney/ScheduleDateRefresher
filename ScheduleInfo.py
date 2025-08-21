@@ -28,6 +28,27 @@ def get_schedule_info_records(site_id: int) -> List[ScheduleInfo]:
 
 
 def _create_schedule_from_record(record: dict) -> ScheduleInfo:
+    """
+    Creates a schedule configuration object from the given record.
+
+    This function processes a dictionary representing schedule data and
+    initializes a `ScheduleInfo` object using the values from the record.
+    It then returns a new `ScheduleInfo` object constructed from the
+    configuration. The function is designed to map specific keys in the input
+    dictionary to respective fields in the `ScheduleInfo` object.
+
+    :param record: A dictionary containing data for schedule creation.
+                   Expected keys include 'ID', 'IsActive', 'SiteID',
+                   'ImportName', 'FilePath', 'SheetName',
+                   'PartNumberCellName', 'CompletionDateOffset',
+                   'MachineNameOffsetLeft', 'MachineNameOffsetUp',
+                   'TaskNameDelimiter', 'CompletionDateDelimeter',
+                   and 'DoPartNameTrimming'.
+    :type record: dict
+    :return: A fully initialized `ScheduleInfo` object with attributes
+             populated from the input record.
+    :rtype: ScheduleInfo
+    """
     config = ScheduleInfo(
         schedule_id=record['ID'],
         is_active=record['IsActive'],

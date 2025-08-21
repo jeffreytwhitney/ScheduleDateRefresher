@@ -35,6 +35,17 @@ def _force_close_excel():
 
 
 def process_schedules():
+    """
+    Processes schedules for a given site by retrieving, processing, and updating
+    schedule-related data in the database. Handles errors specific to missing files or
+    incorrect file headers while logging key events and statuses throughout the operation. Also
+    manages task updates and ensures the synchronization of various task-related records.
+
+    :raises Schedule.ScheduleBadHeadersError: If a schedule file has incorrect or changed headers.
+    :raises Schedule.ScheduleFileNotFoundError: If a schedule file is missing or cannot be found.
+    :raises Exception: For any other unexpected processing errors.
+    :return: None
+    """
     logger = Logger()
     error_count: int = 0
     logger.log_message(f"Starting run")

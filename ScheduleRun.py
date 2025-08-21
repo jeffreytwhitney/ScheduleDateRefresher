@@ -26,6 +26,33 @@ class ScheduleRunConfig:
 
 
 class ScheduleRun:
+    """
+    Represents a schedule run for a specific site.
+
+    Manages scheduled executions based on configuration data from a database. Determines run
+    eligibility, initiates runs, marks runs as complete, and manages run configurations
+    and statuses. This class interacts closely with database records to ensure accurate
+    representation of the schedule run state.
+
+    :ivar is_runnable: Indicates whether the schedule run can be initiated.
+    :type is_runnable: bool
+    :ivar is_complete: Indicates the completion status of the current schedule run.
+    :type is_complete: bool
+    :ivar schedule_run_id: Identifier for the schedule run entry.
+    :type schedule_run_id: int
+    :ivar run_datetime: The scheduled start datetime for the run.
+    :type run_datetime: datetime
+    :ivar start_date: The actual start datetime of the current run.
+    :type start_date: datetime
+    :ivar end_date: The end datetime of the current run.
+    :type end_date: datetime
+    :ivar request_user_employee_number: The employee number of the user requesting the run.
+    :type request_user_employee_number: str
+    :ivar request_user_name: The name of the user requesting the run.
+    :type request_user_name: str
+    :ivar is_automated: Specifies if the current run is automated.
+    :type is_automated: bool
+    """
     _is_runnable: bool = False
     _run_local: bool = False
     _run_local_employee_number: str = ""
