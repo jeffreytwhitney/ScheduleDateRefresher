@@ -5,6 +5,7 @@ import xlwings
 
 from ScheduleInfo import ScheduleInfo
 
+
 def _get_alpha_portion(s):
     return ''.join([char for char in s if char.isalpha()])
 

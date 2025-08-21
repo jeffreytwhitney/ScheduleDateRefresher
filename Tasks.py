@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 import DB
+import INIConfig
 from Logger import Logger
 
 
@@ -72,12 +73,14 @@ class Task:
 
 
 class TaskWriter:
+    _automated_user_id: str
 
     def __init__(self, site_id: int):
         self._updated = None
         self._site_id = site_id
         self._tasks = self._get_tasks()
         self._logger = Logger()
+        self._automated_user_id = str(INIConfig.GetStoredIniValue("Site", "automated_user_id", "ScheduleImporter"))
 
     def _get_tasks(self) -> List[Task]:
         ACTIVE_TASKS_QUERY = "SELECT * FROM qryTaskList WHERE ManualDueDate = 0 AND StatusID Not In (4,5) AND SiteID = {site_id}"
@@ -154,17 +157,17 @@ class TaskWriter:
                     self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
 
     def write_updated_tasks_to_database(self) -> None:
-
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with DB.DatabaseConnection(False) as db:
             for task in self.get_updated_tasks():
                 if task.statusid == 7:
-                    sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                    sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', UpdateUserID = '{self._automated_user_id}', UpdatedTimestamp = '{current_datetime}' WHERE ID = {task.task_id}"
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:
                         self._logger.log_error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
                 else:
-                    sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}' WHERE ID = {task.task_id}"
+                    sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', UpdateUserID = '{self._automated_user_id}', UpdatedTimestamp = '{current_datetime}' WHERE ID = {task.task_id}"
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:

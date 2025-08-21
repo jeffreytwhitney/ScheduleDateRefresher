@@ -757,3 +757,59 @@ DATE/TIME: 2025-07-17 05:12:41.     MESSAGE: Updating 58 task records
 DATE/TIME: 2025-07-17 05:12:43.     MESSAGE: Setting tasks not in schedules to 'Not Scheduled'
 DATE/TIME: 2025-07-17 05:12:43.     MESSAGE: Done processing schedules.
 DATE/TIME: 2025-07-17 14:04:27.     MESSAGE: Starting run
+DATE/TIME: 2025-08-21 07:06:22.     MESSAGE: Starting run
+DATE/TIME: 2025-08-21 07:06:25.     MESSAGE: Processing schedule Additive Mill 1
+DATE/TIME: 2025-08-21 07:06:56.     MESSAGE: Successfully processed schedule Additive Mill 1.
+DATE/TIME: 2025-08-21 07:06:59.     MESSAGE: Processing schedule Ortho Lathe 1
+DATE/TIME: 2025-08-21 07:07:05.     MESSAGE: Successfully processed schedule Ortho Lathe 1.
+DATE/TIME: 2025-08-21 07:07:07.     MESSAGE: Processing schedule Ortho Lathe 2
+DATE/TIME: 2025-08-21 07:07:18.     MESSAGE: Successfully processed schedule Ortho Lathe 2.
+DATE/TIME: 2025-08-21 07:07:22.     MESSAGE: Processing schedule Ortho Mill Dept 1
+DATE/TIME: 2025-08-21 07:07:27.     MESSAGE: Successfully processed schedule Ortho Mill Dept 1.
+DATE/TIME: 2025-08-21 07:07:32.     MESSAGE: Processing schedule Ortho Mill Dept 2
+DATE/TIME: 2025-08-21 07:07:50.     MESSAGE: Successfully processed schedule Ortho Mill Dept 2.
+DATE/TIME: 2025-08-21 07:07:55.     MESSAGE: Processing schedule Ortho Mill Dept 3
+DATE/TIME: 2025-08-21 07:08:08.     MESSAGE: Successfully processed schedule Ortho Mill Dept 3.
+DATE/TIME: 2025-08-21 07:08:12.     MESSAGE: Processing schedule Ortho Mill Dept 4
+DATE/TIME: 2025-08-21 07:08:33.     MESSAGE: Successfully processed schedule Ortho Mill Dept 4.
+DATE/TIME: 2025-08-21 07:08:39.     MESSAGE: Processing schedule Ortho Mill Dept 5
+DATE/TIME: 2025-08-21 07:08:48.     MESSAGE: Successfully processed schedule Ortho Mill Dept 5.
+DATE/TIME: 2025-08-21 07:08:51.     MESSAGE: Processing schedule Ortho Swiss 1
+DATE/TIME: 2025-08-21 07:09:22.     MESSAGE: Successfully processed schedule Ortho Swiss 1.
+DATE/TIME: 2025-08-21 07:09:29.     MESSAGE: Processing schedule Ortho Swiss 2
+DATE/TIME: 2025-08-21 07:10:07.     MESSAGE: Successfully processed schedule Ortho Swiss 2.
+DATE/TIME: 2025-08-21 07:10:10.     MESSAGE: Processing schedule Ortho Swiss 3
+DATE/TIME: 2025-08-21 07:10:29.     MESSAGE: Successfully processed schedule Ortho Swiss 3.
+DATE/TIME: 2025-08-21 07:10:32.     MESSAGE: Processing schedule Ortho Swiss 4
+DATE/TIME: 2025-08-21 07:10:46.     MESSAGE: Successfully processed schedule Ortho Swiss 4.
+DATE/TIME: 2025-08-21 07:10:51.     MESSAGE: Processing schedule Pacing Mills Robo
+DATE/TIME: 2025-08-21 07:11:30.     MESSAGE: Successfully processed schedule Pacing Mills Robo.
+DATE/TIME: 2025-08-21 07:11:36.     MESSAGE: Processing schedule Pacing Mills Micron
+DATE/TIME: 2025-08-21 07:11:53.     MESSAGE: Successfully processed schedule Pacing Mills Micron.
+DATE/TIME: 2025-08-21 07:12:02.     MESSAGE: Processing schedule Cardio Swiss 1
+DATE/TIME: 2025-08-21 07:12:25.     MESSAGE: Successfully processed schedule Cardio Swiss 1.
+DATE/TIME: 2025-08-21 07:12:35.     MESSAGE: Processing schedule Cardio Swiss 2
+DATE/TIME: 2025-08-21 07:12:58.     MESSAGE: Successfully processed schedule Cardio Swiss 2.
+DATE/TIME: 2025-08-21 07:13:09.     MESSAGE: Processing schedule Cardio Swiss 3
+DATE/TIME: 2025-08-21 07:13:36.     MESSAGE: Successfully processed schedule Cardio Swiss 3.
+DATE/TIME: 2025-08-21 07:13:43.     MESSAGE: Processing schedule Cardio Swiss 4
+DATE/TIME: 2025-08-21 07:14:14.     MESSAGE: Successfully processed schedule Cardio Swiss 4.
+DATE/TIME: 2025-08-21 07:14:20.     MESSAGE: Processing schedule Cardio Wires
+DATE/TIME: 2025-08-21 07:14:40.     MESSAGE: Successfully processed schedule Cardio Wires.
+DATE/TIME: 2025-08-21 07:14:44.     MESSAGE: Processing schedule Cardio HP Cell
+DATE/TIME: 2025-08-21 07:14:47.     MESSAGE: Successfully processed schedule Cardio HP Cell.
+DATE/TIME: 2025-08-21 07:14:51.     MESSAGE: Processing schedule Pacing Turning
+DATE/TIME: 2025-08-21 07:15:04.     MESSAGE: Successfully processed schedule Pacing Turning.
+DATE/TIME: 2025-08-21 07:15:15.     MESSAGE: Processing schedule Platinum Swiss Schedule
+DATE/TIME: 2025-08-21 07:15:45.     MESSAGE: Successfully processed schedule Platinum Swiss Schedule.
+DATE/TIME: 2025-08-21 07:15:48.     MESSAGE: Processing schedule Platinum Wires
+DATE/TIME: 2025-08-21 07:15:58.     MESSAGE: Successfully processed schedule Platinum Wires.
+DATE/TIME: 2025-08-21 07:16:02.     MESSAGE: Processing schedule Pacing Wires
+DATE/TIME: 2025-08-21 07:16:14.     MESSAGE: Successfully processed schedule Pacing Wires.
+DATE/TIME: 2025-08-21 07:16:17.     MESSAGE: Processing schedule Additive Mill 2
+DATE/TIME: 2025-08-21 07:16:29.     MESSAGE: Successfully processed schedule Additive Mill 2.
+DATE/TIME: 2025-08-21 07:16:30.     MESSAGE: Writing 1498 import records to the database
+DATE/TIME: 2025-08-21 07:16:41.     MESSAGE: Writing 3061 task name link records to the database
+DATE/TIME: 2025-08-21 07:17:08.     MESSAGE: Writing 177 task id link records to the database
+DATE/TIME: 2025-08-21 07:17:09.     MESSAGE: Updating 99 task records
+DATE/TIME: 2025-08-21 07:17:12.     MESSAGE: Done processing schedules.

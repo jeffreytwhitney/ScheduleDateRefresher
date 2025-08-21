@@ -46,6 +46,11 @@ class ScheduleProcessor:
                 continue
 
             current_task_name = str(self._schedule.partnumber_value).replace("\"", "").replace("'", "")
+
+            if current_task_name == '51185717-21':
+                #This is just for testing...
+                current_task_name = current_task_name
+
             current_completion_date = self._schedule.completion_datetime
             if previous_task_name == current_task_name:
                 self._schedule.offset()

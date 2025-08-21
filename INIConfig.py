@@ -13,10 +13,10 @@ def GetStoredIniValue(ini_section, ini_key, ini_filename):
     config.read(ini_file_path)
     try:
         config_value = config.get(ini_section, ini_key)
-    except:
+    except IOError:
         try:
             config_value = config.get(ini_section, "*")
-        except:
+        except IOError:
             config_value = ""
     return config_value
 

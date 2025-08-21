@@ -37,7 +37,7 @@ def run_test():
     import_record_writer = ImportRecordWriter(site_id)
     task_name_link_writer = TaskNameLinkRecordWriter(site_id)
 
-    schedule_info = [info for info in schedule_info_records if info.import_name == 'Pacing Wires']
+    schedule_info = [info for info in schedule_info_records if info.import_name == 'Cardio Swiss 1']
     xlschedule = Schedule(schedule_info[0])
     processor = ScheduleProcessor(site_id, schedule_run, xlschedule, import_record_writer, task_name_link_writer)
     processor.process_schedule()
@@ -53,12 +53,13 @@ def run_test():
             task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
 
     task_id_link_writer.write_task_id_link_records_to_database()
+    task_writer.write_currently_running_tasks_to_database()
     DB.execute_sql_statement(f"Delete from dbo.tblScheduleRunLog where ScheduleRunEntryID = {test_run_id}")
 
     xlschedule.close()
 
 
 if __name__ == '__main__':
-    #run_test()
+    run_test()
     #run_just_schedule_run()
-    run_auto_not_scheduled()
+    #run_auto_not_scheduled()
