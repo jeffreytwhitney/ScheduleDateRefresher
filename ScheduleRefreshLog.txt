@@ -3,3 +3,29 @@ Processing schedule Additive Mill 1
 Starting Run...
 Starting Run...
 Starting Run...
+Starting Run...
+Processing schedule Additive Mill 1
+Successfully processed schedule Additive Mill 1.
+Processing schedule Ortho Lathe 1
+Successfully processed schedule Ortho Lathe 1.
+Processing schedule Ortho Lathe 2
+Successfully processed schedule Ortho Lathe 2.
+Processing schedule Ortho Mill Dept 1
+Successfully processed schedule Ortho Mill Dept 1.
+Processing schedule Ortho Mill Dept 2
+Successfully processed schedule Ortho Mill Dept 2.
+Processing schedule Ortho Mill Dept 3
+Successfully processed schedule Ortho Mill Dept 3.
+Processing schedule Ortho Mill Dept 4
+Successfully processed schedule Ortho Mill Dept 4.
+Processing schedule Ortho Mill Dept 5
+Successfully processed schedule Ortho Mill Dept 5.
+Processing schedule Ortho Swiss 1
+Successfully processed schedule Ortho Swiss 1.
+Processing schedule Ortho Swiss 2
+Successfully processed schedule Ortho Swiss 2.
+Processing schedule Ortho Swiss 3
+Successfully processed schedule Ortho Swiss 3.
+Processing schedule Ortho Swiss 4
+Successfully processed schedule Ortho Swiss 4.
+Processing schedule Pacing Mills Robo
