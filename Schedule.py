@@ -1,5 +1,5 @@
 import os
-
+import logging.config
 import dateutil
 from dateutil.parser import parse
 from datetime import datetime, timedelta
@@ -68,12 +68,16 @@ class Schedule:
     _valid_part_delimiters = []
     _machine_name: str
     _min_completion_date: datetime = datetime.now() - timedelta(days=365)
+    _logger: logging.Logger
 
     def __init__(self, schedule_config: ScheduleInfo) -> None:
+        logging.config.fileConfig('logging.conf')
+        self._logger = logging.getLogger('scheduleLogger')
         self._schedule_info = schedule_config
         self._load_schedule()
 
     def close(self) -> None:
+        self._logger.debug("Closing Schedule")
         if self._workbook:
             self._workbook.close()
         if self._excel_application:
@@ -97,6 +101,7 @@ class Schedule:
         :raises ScheduleBadHeadersError: If the headers of the schedule file do not follow
             the expected format.
         """
+        self._logger.debug(f"Loading Schedule:{self._schedule_info.import_name}")
         xlapp = xlwings.App(visible=False)
         self._excel_application = xlapp
         filepath = self._schedule_info.file_path
@@ -106,6 +111,7 @@ class Schedule:
         self._valid_part_delimiters = self._schedule_info.task_name_delimiter.upper().split(', ')
 
         if not os.path.isfile(filepath):
+            self._logger.error(f"Schedule File Not Found:{filepath}")
             raise ScheduleFileNotFoundError(self._schedule_info.file_path)
 
         xlbook = xlwings.Book(filepath, update_links=False, read_only=True)
@@ -130,6 +136,7 @@ class Schedule:
             machine_name_cell = self._partnumber_cell.offset(machine_offset_up, machine_offset_left)
             self._machine_name = machine_name_cell.value
         else:
+            self._logger.error(f"Bad Headers in Schedule:{filepath}")
             if self._workbook:
                 self._workbook.close()
             if self._excel_application:

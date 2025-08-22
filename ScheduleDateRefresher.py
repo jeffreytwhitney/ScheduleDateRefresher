@@ -7,7 +7,8 @@ import INIConfig
 import Schedule
 import ScheduleInfo
 from ImportRecords import ImportRecordWriter
-from Logger import Logger
+import logging.config
+
 from ScheduleProcessor import ScheduleProcessor
 from ScheduleRun import ScheduleRun
 from TaskIDLinkRecords import TaskIDLinkRecordWriter
@@ -46,17 +47,26 @@ def process_schedules():
     :raises Exception: For any other unexpected processing errors.
     :return: None
     """
-    logger = Logger()
+    logging.config.fileConfig('logging.conf')
+    logger = logging.getLogger('refreshLogger')
+    dblogger = logging.getLogger('sqlLogger')
     error_count: int = 0
-    logger.log_message(f"Starting run")
+    logger.info("Starting Run...")
 
     site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
+    logger.debug(f"Site ID: {site_id}")
+
     auto_not_scheduled = int(INIConfig.GetStoredIniValue("Switches", "auto_not_scheduled", "ScheduleImporter"))
+    logger.debug(f"Auto Not Scheduled: {auto_not_scheduled}")
+
     schedule_run = ScheduleRun(site_id)
+    logger.debug(f"Schedule Run ID: {schedule_run.schedule_run_id}")
+
     runnable = schedule_run.is_runnable
     if not runnable:
-        logger.log_message('There is nothing to run.')
+        logger.info('There is nothing to run.')
         return
+
     schedule_run.start_run()
     schedule_info_records = ScheduleInfo.get_schedule_info_records(site_id)
 
@@ -67,23 +77,32 @@ def process_schedules():
         try:
             xlschedule = Schedule.Schedule(schedule_info)
             processor = ScheduleProcessor(site_id, schedule_run, xlschedule, import_record_writer, task_name_link_writer)
-            logger.log_message(f"Processing schedule {schedule_info.import_name}")
+            logger.info(f"Processing schedule {schedule_info.import_name}")
             processor.process_schedule()
             xlschedule.close()
+
             log_message = f"Successfully processed schedule {schedule_info.import_name}."
-            logger.log_schedule_run_message(schedule_run.schedule_run_id, schedule_info.schedule_id, log_message)
+            logger.info(log_message)
+            dblogger.info(log_message, extra={"runid":      {schedule_run.schedule_run_id},
+                                              "scheduleid": {schedule_info.schedule_id}})
         except Schedule.ScheduleBadHeadersError:
             error_count += 1
             error_message = f"The headers (columns) for schedule {schedule_info.import_name} have change. Cannot process file."
-            logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
+            logger.error(error_message)
+            dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
+                                                 "scheduleid": {schedule_info.schedule_id}})
         except Schedule.ScheduleFileNotFoundError:
             error_count += 1
             error_message = f"Could not find file for schedule {schedule_info.import_name}."
-            logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
+            logger.error(error_message)
+            dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
+                                                 "scheduleid": {schedule_info.schedule_id}})
         except Exception:
             error_count += 1
             error_message = f"Processing error for schedule {schedule_info.import_name}."
-            logger.log_schedule_run_error(schedule_run.schedule_run_id, schedule_info.schedule_id, error_message)
+            logger.error(error_message)
+            dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
+                                                 "scheduleid": {schedule_info.schedule_id}})
 
     task_id_link_writer = TaskIDLinkRecordWriter(site_id)
     task_writer = TaskWriter(site_id)
@@ -98,28 +117,27 @@ def process_schedules():
             task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
 
     import_record_count = len(import_record_writer.import_records)
-    logger.log_message(f"Writing {import_record_count} import records to the database")
-    import_record_writer.write_import_records_to_database()
+    logger.info(f"Writing {import_record_count} import records to the database")
 
     task_link_record_count = len(task_name_link_writer.task_name_link_records)
-    logger.log_message(f"Writing {task_link_record_count} task name link records to the database")
+    logger.info(f"Writing {task_link_record_count} task name link records to the database")
     task_name_link_writer.write_task_name_link_records_to_database()
 
     task_id_link_record_count = len(task_id_link_writer.task_id_link_records)
-    logger.log_message(f"Writing {task_id_link_record_count} task id link records to the database")
+    logger.info(f"Writing {task_id_link_record_count} task id link records to the database")
     task_id_link_writer.write_task_id_link_records_to_database()
 
     task_writer_count = len(task_writer.updated_tasks)
-    logger.log_message(f"Updating {task_writer_count} task records")
+    logger.info(f"Updating {task_writer_count} task records")
     task_writer.write_currently_running_tasks_to_database()
     task_writer.write_updated_tasks_to_database()
 
     if auto_not_scheduled == 1 and task_link_record_count > 0:
-        logger.log_message(f"Setting tasks not in schedules to 'Not Scheduled'")
+        logger.info(f"Setting tasks not in schedules to 'Not Scheduled'")
         task_writer.update_db_auto_not_scheduled()
 
     schedule_run.complete_run(error_count, task_writer_count)
-    logger.log_message("Done processing schedules.")
+    logger.info("Done processing schedules.")
 
 
 if __name__ == '__main__':
