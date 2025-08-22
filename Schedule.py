@@ -108,7 +108,7 @@ class Schedule:
         if not os.path.isfile(filepath):
             raise ScheduleFileNotFoundError(self._schedule_info.file_path)
 
-        xlbook = xlwings.Book(filepath)
+        xlbook = xlwings.Book(filepath, update_links=False, read_only=True)
         xlsheet = xlbook.sheets[sheetname]
         xlpartRange = xlsheet.range(partnumber_address)
         xlcompletionRange = xlpartRange.offset(0, completion_offset)
@@ -184,7 +184,7 @@ class Schedule:
     def is_completion_date_valid(self) -> bool:
         try:
             completion_date = dateutil.parser.parse(self.completion_date_value)
-        except ParserError:
+        except dateutil.parser.ParserError:
             return False
         return completion_date > self._min_completion_date
 
