@@ -4,7 +4,7 @@ from typing import List
 import logging.config
 import logging
 import DB
-
+import Lib
 
 @dataclass
 class ImportRecord:
@@ -21,7 +21,8 @@ class ImportRecordWriter:
     def __init__(self, site_id: int):
         self._records: List[ImportRecord] = []
         self._site_id = site_id
-        logging.config.fileConfig('logging.conf')
+        conf_path = Lib.get_current_directory() + "\\logging.conf"
+        logging.config.fileConfig(conf_path)
         self._logger = logging.getLogger('importLogger')
 
     def add_import_record(self, task_name: str, due_date: datetime):

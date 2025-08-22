@@ -5,6 +5,7 @@ from ImportRecords import ImportRecordWriter
 from ScheduleRun import ScheduleRun
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
 import logging.config
+import Lib
 
 
 class ScheduleProcessor:
@@ -33,7 +34,8 @@ class ScheduleProcessor:
     _logger: logging.Logger
 
     def __init__(self, site_id: int, schedule_run: ScheduleRun, schedule: Schedule, import_record_writer: ImportRecordWriter, task_name_link_record_writer: TaskNameLinkRecordWriter):
-        logging.config.fileConfig('logging.conf')
+        conf_path = Lib.get_current_directory() + "\\logging.conf"
+        logging.config.fileConfig(conf_path)
         self._logger = logging.getLogger('scheduleProcessorLogger')
         self._schedule_run = schedule_run
         self._schedule = schedule

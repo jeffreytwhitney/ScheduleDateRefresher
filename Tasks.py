@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List
-
+import Lib
 import DB
 import INIConfig
 import logging.config
@@ -114,7 +114,8 @@ class TaskWriter:
         self._site_id = site_id
         self._tasks = self._get_tasks()
         self._automated_user_id = str(INIConfig.GetStoredIniValue("Site", "automated_user_id", "ScheduleImporter"))
-        logging.config.fileConfig('logging.conf')
+        conf_path = Lib.get_current_directory() + "\\logging.conf"
+        logging.config.fileConfig(conf_path)
         self._logger = logging.getLogger('taskLogger')
 
     def _get_tasks(self) -> List[Task]:

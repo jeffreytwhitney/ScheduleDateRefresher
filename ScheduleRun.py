@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, time
 import logging.config
 import DB
 import INIConfig
+import Lib
 
 
 def get_local_user_id() -> str:
@@ -61,7 +62,8 @@ class ScheduleRun:
     _logger: logging.Logger
 
     def __init__(self, site_id: int):
-        logging.config.fileConfig('logging.conf')
+        conf_path = Lib.get_current_directory() + "\\logging.conf"
+        logging.config.fileConfig(conf_path)
         self._logger = logging.getLogger('scheduleRunLogger')
 
         self._site_id = site_id

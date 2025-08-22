@@ -56,6 +56,10 @@
   {
    "optionDest": "datas",
    "value": "C:/Users/JTWhitney/PycharmProjects/ScheduleDateRefresher/ScheduleImporter.ini;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/JTWhitney/PycharmProjects/ScheduleDateRefresher/logging.conf;."
   }
  ],
  "nonPyinstallerOptions": {

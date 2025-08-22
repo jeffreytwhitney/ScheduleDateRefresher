@@ -3,7 +3,7 @@ import logging.config
 import dateutil
 from dateutil.parser import parse
 from datetime import datetime, timedelta
-
+import Lib
 import xlwings
 
 from ScheduleInfo import ScheduleInfo
@@ -71,7 +71,8 @@ class Schedule:
     _logger: logging.Logger
 
     def __init__(self, schedule_config: ScheduleInfo) -> None:
-        logging.config.fileConfig('logging.conf')
+        conf_path = Lib.get_current_directory() + "\\logging.conf"
+        logging.config.fileConfig(conf_path)
         self._logger = logging.getLogger('scheduleLogger')
         self._schedule_info = schedule_config
         self._load_schedule()

@@ -14,7 +14,7 @@ from ScheduleRun import ScheduleRun
 from TaskIDLinkRecords import TaskIDLinkRecordWriter
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
-
+import Lib
 
 def _is_excel_running():
     for process in psutil.process_iter(['name']):
@@ -47,7 +47,8 @@ def process_schedules():
     :raises Exception: For any other unexpected processing errors.
     :return: None
     """
-    logging.config.fileConfig('logging.conf')
+    conf_path = Lib.get_current_directory() + "\\logging.conf"
+    logging.config.fileConfig(conf_path)
     logger = logging.getLogger('refreshLogger')
     dblogger = logging.getLogger('sqlLogger')
     error_count: int = 0
