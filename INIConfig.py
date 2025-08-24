@@ -18,6 +18,11 @@ def GetStoredIniValue(ini_section, ini_key, ini_filename):
             config_value = config.get(ini_section, "*")
         except IOError:
             config_value = ""
+    except configparser.NoOptionError:
+        config_value = ""
+    except configparser.NoSectionError:
+        config_value = ""
+
     return config_value
 
 

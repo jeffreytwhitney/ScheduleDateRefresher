@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
-import logging.config
 import logging
 import DB
-import Lib
+import RefreshLogger
 
 @dataclass
 class ImportRecord:
@@ -21,9 +20,7 @@ class ImportRecordWriter:
     def __init__(self, site_id: int):
         self._records: List[ImportRecord] = []
         self._site_id = site_id
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('importLogger')
+        self._logger = RefreshLogger.get_logger('importLogger')
 
     def add_import_record(self, task_name: str, due_date: datetime):
         self._logger.debug(f"Adding import record for task '{task_name}' with due date '{due_date}'")

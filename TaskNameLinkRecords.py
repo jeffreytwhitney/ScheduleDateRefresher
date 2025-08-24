@@ -1,7 +1,7 @@
 import logging.config
 from dataclasses import dataclass
 from typing import List
-import Lib
+import RefreshLogger
 import DB
 
 
@@ -19,9 +19,8 @@ class TaskNameLinkRecordWriter:
     def __init__(self, site_id: int):
         self._task_name_link_records: List[TaskNameLinkRecord] = []
         self._site_id = site_id
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('taskNameLinkLogger')
+
+        self._logger = RefreshLogger.get_logger('taskNameLinkLogger')
 
     def add_task_name_link_record(self, task_name: str, linked_table_name_id: int, machine_name: str, currently_running: bool):
         self._logger.debug(f"Adding task name link record for task name '{task_name}' with linked table name ID '{linked_table_name_id}' and machine name '{machine_name}'")
