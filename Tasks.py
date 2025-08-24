@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import List
-import Lib
 import DB
 import INIConfig
-import logging.config
+import RefreshLogger
+import logging
 
 
 def prev_weekday(adate):
@@ -14,31 +14,6 @@ def prev_weekday(adate):
 
 
 class Task:
-    """
-    Represents a task within a project management system.
-
-    This class is used to define the properties and status of a task. It includes
-    information such as the task's ID, associated project ID, status ID, task name,
-    due date, and whether the task is currently running or updated. It provides
-    properties to safely access these attributes.
-
-    :ivar task_id: Unique identifier for the task.
-    :type task_id: int
-    :ivar is_currently_running: Indicates if the task is currently running.
-    :type is_currently_running: bool
-    :ivar is_updated: Indicates whether the task's information has been updated.
-    :type is_updated: bool
-    :ivar projectid: Identifier of the project to which the task belongs.
-    :type projectid: int
-    :ivar statusid: Status ID representing the current status of the task.
-    :type statusid: int
-    :ivar taskname: Name of the task.
-    :type taskname: str
-    :ivar duedate: Due date of the task.
-    :type duedate: datetime
-    :ivar scheduledduedate: Scheduled due date of the task.
-    :type scheduledduedate: datetime
-    """
     _updated: bool = False
     _id: int
     _projectid: int
@@ -97,15 +72,27 @@ class Task:
         return self._scheduledduedate
 
 
-class TaskWriter:
-    """
-    Handles the management, manipulation, and updating of task objects for a specific site.
+def _create_task_from_record(record: dict) -> Task:
+    config = Task(
+        iid=record['ID'],
+        projectid=record['ProjectID'],
+        statusid=record['StatusID'],
+        taskname=record['TaskName'],
+        duedate=datetime.strptime(record['DueDate'], "%m/%d/%y"),
+        scheduledduedate=datetime.strptime(record['ScheduledDueDate'], "%m/%d/%y")
+    )
 
-    Provides functionality to interact with a set of tasks, which includes filtering,
-    retrieving, and updating tasks based on specific criteria. The class also handles
-    the synchronization of task data with the database, ensuring that any changes
-    ```arepython reflected
-     persist"""
+    return Task(
+        config.task_id,
+        config.projectid,
+        config.statusid,
+        config.taskname,
+        config.duedate,
+        config.scheduledduedate
+    )
+
+
+class TaskWriter:
     _automated_user_id: str
     _logger: logging.Logger
 
@@ -114,33 +101,12 @@ class TaskWriter:
         self._site_id = site_id
         self._tasks = self._get_tasks()
         self._automated_user_id = str(INIConfig.GetStoredIniValue("Site", "automated_user_id", "ScheduleImporter"))
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('taskLogger')
+        self._logger = RefreshLogger.get_logger('taskLogger')
 
     def _get_tasks(self) -> List[Task]:
-        ACTIVE_TASKS_QUERY = "SELECT * FROM qryTaskList WHERE ManualDueDate = 0 AND StatusID Not In (4,5) AND SiteID = {site_id}"
-        records = DB.get_sql_recordset(ACTIVE_TASKS_QUERY.format(site_id=self._site_id))
-        return [self._create_task_from_record(record) for record in records]
-
-    def _create_task_from_record(self, record: dict) -> Task:
-        config = Task(
-            iid=record['ID'],
-            projectid=record['ProjectID'],
-            statusid=record['StatusID'],
-            taskname=record['TaskName'],
-            duedate=datetime.strptime(record['DueDate'], "%m/%d/%y"),
-            scheduledduedate=datetime.strptime(record['ScheduledDueDate'], "%m/%d/%y")
-        )
-
-        return Task(
-            config.task_id,
-            config.projectid,
-            config.statusid,
-            config.taskname,
-            config.duedate,
-            config.scheduledduedate
-        )
+        active_tasks_query = "SELECT * FROM qryTaskList WHERE ManualDueDate = 0 AND StatusID Not In (4,5) AND SiteID = {site_id}"
+        records = DB.get_sql_recordset(active_tasks_query.format(site_id=self._site_id))
+        return [_create_task_from_record(record) for record in records]
 
     @property
     def updated_tasks(self) -> List[Task]:
@@ -184,7 +150,8 @@ class TaskWriter:
             db.execute_statement(sql_statement)
             for task in self.get_currently_running_tasks():
                 if task.statusid == 7:
-                    self._logger.debug(f"Setting 'Not Schedled' task '{task.taskname}' to currently running and setting status to 'Not Started'.")
+                    self._logger.debug(
+                        f"Setting 'Not Schedled' task '{task.taskname}' to currently running and setting status to 'Not Started'.")
                     sql_statement = f"UPDATE tblTask SET StatusID = 1, CurrentlyRunning = 1 WHERE ID = {task.task_id}"
                 else:
                     self._logger.debug(f"Setting task '{task.taskname}' to currently running.")
@@ -199,7 +166,8 @@ class TaskWriter:
         with DB.DatabaseConnection(False) as db:
             for task in self.get_updated_tasks():
                 if task.statusid == 7:
-                    self._logger.debug(f"Updating 'Not Schedled' task '{task.taskname}' to due date {task.duedate} and setting status to 'Not Started'.")
+                    self._logger.debug(
+                        f"Updating 'Not Schedled' task '{task.taskname}' to due date {task.duedate} and setting status to 'Not Started'.")
                     sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', UpdateUserID = '{self._automated_user_id}', UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}"
                     try:
                         db.execute_statement(sql_statement)
