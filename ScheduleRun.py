@@ -1,10 +1,10 @@
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, time
-import logging.config
+import logging
 import DB
 import INIConfig
-import Lib
+import RefreshLogger
 
 
 def get_local_user_id() -> str:
@@ -27,33 +27,6 @@ class ScheduleRunConfig:
 
 
 class ScheduleRun:
-    """
-    Represents a schedule run for a specific site.
-
-    Manages scheduled executions based on configuration data from a database. Determines run
-    eligibility, initiates runs, marks runs as complete, and manages run configurations
-    and statuses. This class interacts closely with database records to ensure accurate
-    representation of the schedule run state.
-
-    :ivar is_runnable: Indicates whether the schedule run can be initiated.
-    :type is_runnable: bool
-    :ivar is_complete: Indicates the completion status of the current schedule run.
-    :type is_complete: bool
-    :ivar schedule_run_id: Identifier for the schedule run entry.
-    :type schedule_run_id: int
-    :ivar run_datetime: The scheduled start datetime for the run.
-    :type run_datetime: datetime
-    :ivar start_date: The actual start datetime of the current run.
-    :type start_date: datetime
-    :ivar end_date: The end datetime of the current run.
-    :type end_date: datetime
-    :ivar request_user_employee_number: The employee number of the user requesting the run.
-    :type request_user_employee_number: str
-    :ivar request_user_name: The name of the user requesting the run.
-    :type request_user_name: str
-    :ivar is_automated: Specifies if the current run is automated.
-    :type is_automated: bool
-    """
     _is_runnable: bool = False
     _run_local: bool = False
     _run_local_employee_number: str = ""
@@ -62,9 +35,8 @@ class ScheduleRun:
     _logger: logging.Logger
 
     def __init__(self, site_id: int):
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('scheduleRunLogger')
+
+        self._logger = RefreshLogger.get_logger('scheduleRunLogger')
 
         self._site_id = site_id
         run_local_integer = int(INIConfig.GetStoredIniValue("Switches", "run_local", "ScheduleImporter"))
