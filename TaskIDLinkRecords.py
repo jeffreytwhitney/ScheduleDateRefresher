@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from logging import Logger
+import logging
 from typing import List
-import logging.config
-import Lib
+import RefreshLogger
 import DB
 
 
@@ -19,9 +18,7 @@ class TaskIDLinkRecordWriter:
     def __init__(self, site_id: int):
         self._task_id_link_records: List[TaskIDLinkRecord] = []
         self._site_id = site_id
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('taskIDLinkLogger')
+        self._logger = RefreshLogger.get_logger('taskIDLinkLogger')
 
     @property
     def task_id_link_records(self):
