@@ -2,7 +2,8 @@ import os
 import dateutil
 from dateutil.parser import parse
 from datetime import datetime, timedelta
-import RefeshLogger
+import RefreshLogger
+import logging
 import xlwings
 
 from ScheduleInfo import ScheduleInfo
