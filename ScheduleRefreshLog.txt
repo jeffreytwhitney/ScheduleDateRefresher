@@ -91,3 +91,6 @@ refreshLogger - INFO - Writing 3264 task name link records to the database
 refreshLogger - INFO - Writing 176 task id link records to the database
 refreshLogger - INFO - Updating 118 task records
 refreshLogger - INFO - Done processing schedules.
+2025-08-25 05:58:24,081 - refreshLogger - INFO - Starting Run...
+2025-08-25 06:02:24,093 - refreshLogger - INFO - Starting Run...
+2025-08-25 06:02:24,137 - refreshLogger - INFO - There is nothing to run.

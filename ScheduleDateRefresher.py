@@ -61,13 +61,13 @@ def process_schedules():
     logger.debug(f"Auto Not Scheduled: {auto_not_scheduled}")
 
     schedule_run = ScheduleRun(site_id)
-    logger.debug(f"Schedule Run ID: {schedule_run.schedule_run_id}")
 
     runnable = schedule_run.is_runnable
     if not runnable:
         logger.info('There is nothing to run.')
         return
 
+    logger.debug(f"Schedule Run ID: {schedule_run.schedule_run_id}")
     schedule_run.start_run()
     schedule_info_records = ScheduleInfo.get_schedule_info_records(site_id)
 
