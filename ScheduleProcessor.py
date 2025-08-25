@@ -4,8 +4,8 @@ from Schedule import Schedule
 from ImportRecords import ImportRecordWriter
 from ScheduleRun import ScheduleRun
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
-import logging.config
-import Lib
+import logging
+import RefreshLogger
 
 
 class ScheduleProcessor:
@@ -34,9 +34,7 @@ class ScheduleProcessor:
     _logger: logging.Logger
 
     def __init__(self, site_id: int, schedule_run: ScheduleRun, schedule: Schedule, import_record_writer: ImportRecordWriter, task_name_link_record_writer: TaskNameLinkRecordWriter):
-        conf_path = Lib.get_current_directory() + "\\logging.conf"
-        logging.config.fileConfig(conf_path)
-        self._logger = logging.getLogger('scheduleProcessorLogger')
+        self._logger = RefreshLogger.get_logger('scheduleProcessorLogger')
         self._schedule_run = schedule_run
         self._schedule = schedule
         self._import_record_writer = import_record_writer
@@ -44,22 +42,6 @@ class ScheduleProcessor:
         self._site_id = site_id
 
     def process_schedule(self):
-        """
-        Processes a schedule to generate task name link records and import records.
-
-        The `process_schedule` method performs a detailed traversal and processing
-        of schedule data contained within the `_schedule` object. It updates task
-        name link records as well as import records based on the data provided in
-        the schedule. The method handles tasks, offsets empty or invalid rows, and
-        logs critical information during its execution.
-
-        Raised exceptions, parameters, and returns are described in their respective sections.
-
-        :raises AttributeError: If any required object or attribute is missing
-            within the context of this method.
-        :raises ValueError: If the schedule data contains unexpected or invalid information.
-        :return: None
-        """
         self._logger.debug(f"Processing Schedule ID: {self._schedule.schedule_id}")
         self._previous_task_name: str = ""
         self._previous_completion_date: datetime = datetime.min

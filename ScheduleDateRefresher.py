@@ -7,14 +7,15 @@ import INIConfig
 import Schedule
 import ScheduleInfo
 from ImportRecords import ImportRecordWriter
-import logging.config
+import logging
 
 from ScheduleProcessor import ScheduleProcessor
 from ScheduleRun import ScheduleRun
 from TaskIDLinkRecords import TaskIDLinkRecordWriter
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
-import Lib
+import RefreshLogger
+
 
 def _is_excel_running():
     for process in psutil.process_iter(['name']):
@@ -47,10 +48,9 @@ def process_schedules():
     :raises Exception: For any other unexpected processing errors.
     :return: None
     """
-    conf_path = Lib.get_current_directory() + "\\logging.conf"
-    logging.config.fileConfig(conf_path)
-    logger = logging.getLogger('refreshLogger')
-    dblogger = logging.getLogger('sqlLogger')
+
+    logger = RefreshLogger.get_logger('refreshLogger')
+    dblogger = RefreshLogger.get_db_logger()
     error_count: int = 0
     logger.info("Starting Run...")
 
