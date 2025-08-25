@@ -31,7 +31,7 @@ def test_taskwriter_get_tasks_by_name(mock_get_sql, mock_ini, mock_logger):
     mock_ini.return_value = "auto_user"
     mock_logger.return_value = MagicMock()
     record = {
-        'ID': 1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
+        'ID':      1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
         'DueDate': '06/01/24', 'ScheduledDueDate': '06/02/24'
     }
     mock_get_sql.return_value = [record]
@@ -43,7 +43,6 @@ def test_taskwriter_get_tasks_by_name(mock_get_sql, mock_ini, mock_logger):
     assert tasks[0].scheduledduedate == datetime(2024, 6, 2)
 
 
-
 @patch('Tasks.RefreshLogger.get_logger')
 @patch('Tasks.INIConfig.GetStoredIniValue')
 @patch('Tasks.DB.get_sql_recordset')
@@ -51,7 +50,7 @@ def test_taskwriter_updated_and_running_tasks(mock_get_sql, mock_ini, mock_logge
     mock_ini.return_value = "auto_user"
     mock_logger.return_value = MagicMock()
     record = {
-        'ID': 1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
+        'ID':      1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
         'DueDate': '06/01/24', 'ScheduledDueDate': '06/02/24'
     }
     mock_get_sql.return_value = [record]
@@ -71,7 +70,7 @@ def test_taskwriter_update_dates_by_taskname(mock_get_sql, mock_ini, mock_logger
     mock_ini.return_value = "auto_user"
     mock_logger.return_value = MagicMock()
     record = {
-        'ID': 1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
+        'ID':      1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
         'DueDate': '06/01/24', 'ScheduledDueDate': '06/02/24'
     }
     mock_get_sql.return_value = [record]
@@ -91,7 +90,7 @@ def test_taskwriter_write_updated_tasks_to_database(mock_db_conn, mock_get_sql, 
     mock_ini.return_value = "auto_user"
     mock_logger.return_value = MagicMock()
     mock_get_sql.return_value = [{
-        'ID': 1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
+        'ID':      1, 'ProjectID': 2, 'StatusID': 3, 'TaskName': 'Alpha',
         'DueDate': '06/01/24', 'ScheduledDueDate': '06/02/24'
     }]
     mock_db = MagicMock()

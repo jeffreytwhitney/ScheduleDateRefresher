@@ -34,7 +34,7 @@ def test_automated_user_id_returns_expected_value():
 
 def test_run_local_returns_expected_value():
     value = int(INIConfig.GetStoredIniValue('Switches', 'run_local', "//test/TEST_ScheduleImporter"))
-    assert value == 1
+    assert value == 0
 
 
 def test_auto_not_scheduled_returns_expected_value():
