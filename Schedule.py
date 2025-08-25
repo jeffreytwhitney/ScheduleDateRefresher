@@ -119,7 +119,7 @@ class Schedule:
     def completion_datetime(self) -> datetime:
         try:
             return dateutil.parser.parse(self.completion_date_value)
-        except ParserError:
+        except dateutil.parser.ParserError:
             return datetime.min
 
     @property
