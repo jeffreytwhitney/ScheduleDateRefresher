@@ -1,8 +1,10 @@
-import pytest
-from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+
+import pytest
 
 import ImportRecords
+
 
 @pytest.fixture
 def writer():
@@ -11,14 +13,17 @@ def writer():
         mock_get_logger.return_value = mock_logger
         return ImportRecords.ImportRecordWriter(site_id=1)
 
+
 def test_add_import_record_adds_new(writer):
     writer.add_import_record('Task1', datetime(2024, 6, 1))
     assert len(writer.import_records) == 1
     assert writer.import_records[0].task_name == 'Task1'
 
+
 def test_add_import_record_strips_quotes(writer):
     writer.add_import_record('"Task2\'"', datetime(2024, 6, 2))
     assert writer.import_records[0].task_name == 'Task2'
+
 
 def test_add_import_record_updates_due_date(writer):
     due1 = datetime(2024, 6, 3)
@@ -28,12 +33,14 @@ def test_add_import_record_updates_due_date(writer):
     assert len(writer.import_records) == 1
     assert writer.import_records[0].due_date == due2
 
+
 def test_add_import_record_does_not_update_due_date_if_later(writer):
     due1 = datetime(2024, 6, 3)
     due2 = due1 + timedelta(days=1)
     writer.add_import_record('Task4', due1)
     writer.add_import_record('Task4', due2)
     assert writer.import_records[0].due_date == due1
+
 
 @patch('ImportRecords.DB')
 def test_write_import_records_to_database_calls_db(mock_db, writer):
@@ -46,6 +53,7 @@ def test_write_import_records_to_database_calls_db(mock_db, writer):
     sql = mock_conn.execute_statement.call_args[0][0]
     assert "INSERT INTO tblImport" in sql
     assert "Task5" in sql
+
 
 @patch('ImportRecords.DB')
 def test_write_import_records_to_database_handles_exception(mock_db, writer):

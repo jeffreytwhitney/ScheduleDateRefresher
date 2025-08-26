@@ -49,7 +49,7 @@ def process_schedules():
     :return: None
     """
 
-    logger = RefreshLogger.get_logger('refreshLogger')
+    logger: logging.Logger = RefreshLogger.get_logger('refreshLogger')
     dblogger = RefreshLogger.get_db_logger()
     error_count: int = 0
     logger.info("Starting Run...")
@@ -86,24 +86,30 @@ def process_schedules():
             logger.info(log_message)
             dblogger.info(log_message, extra={"runid":      {schedule_run.schedule_run_id},
                                               "scheduleid": {schedule_info.schedule_id}})
+
         except Schedule.ScheduleBadHeadersError:
+            xlschedule.close()
             error_count += 1
             error_message = f"The headers (columns) for schedule {schedule_info.import_name} have change. Cannot process file."
             logger.error(error_message)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
+
         except Schedule.ScheduleFileNotFoundError:
             error_count += 1
             error_message = f"Could not find file for schedule {schedule_info.import_name}."
             logger.error(error_message)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
+            xlschedule.close()
+
         except Exception:
             error_count += 1
             error_message = f"Processing error for schedule {schedule_info.import_name}."
             logger.error(error_message)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
+            xlschedule.close()
 
     task_id_link_writer = TaskIDLinkRecordWriter(site_id)
     task_writer = TaskWriter(site_id)

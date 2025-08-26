@@ -1,7 +1,7 @@
-import INIConfig
 import os
 import shutil
 
+import INIConfig
 
 
 def setup_module():

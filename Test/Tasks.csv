@@ -1,4 +1,4 @@
-﻿ID,ProjectID,TaskName,SiteID,DueDate,DateStarted,ScheduledDueDate,DepartmentID,StatusID,CurrentlyRunning
+ID,ProjectID,TaskName,SiteID,DueDate,DateStarted,ScheduledDueDate,DepartmentID,StatusID,CurrentlyRunning
 5917,1118,04.641.102,1,9/3/2025,NULL,9/4/2025,2,1,0
 5933,1119,04.641.054,1,9/10/2025,NULL,9/11/2025,2,1,0
 5941,1119,04.641.062,1,9/9/2025,NULL,9/10/2025,2,1,0
