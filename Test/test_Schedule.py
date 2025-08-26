@@ -1,56 +1,11 @@
-import builtins
 import os
 import sys
-import types
-from datetime import datetime, timedelta
-from types import SimpleNamespace
+
 from unittest.mock import patch, MagicMock
 
 import pytest
 
 import Schedule
-
-
-class FakeRange:
-    def __init__(self, value=None, row=1):
-        self.value = value
-        self.row = row
-        self._end_target = None
-        self._offsets = {}  # (dr, dc) -> FakeRange
-
-    def offset(self, dr, dc):
-        # Return predefined offset if exists; otherwise return a generic new range
-        return self._offsets.get((dr, dc), FakeRange(None, self.row + dr))
-
-    def set_offset(self, dr, dc, rng):
-        self._offsets[(dr, dc)] = rng
-        return rng
-
-    def end(self, direction):
-        # direction is a string like 'down' or 'up', but we just return target
-        return self._end_target if self._end_target else self
-
-    def set_end_target(self, rng):
-        self._end_target = rng
-        return rng
-
-
-class FakeSheet:
-    def __init__(self, starting_cell_addr, start_range: FakeRange, final_row_value: int):
-        # used_range.rows.count is used to compute row_count
-        self.used_range = SimpleNamespace(rows=SimpleNamespace(count=final_row_value))
-        self._starting_cell_addr = starting_cell_addr
-        self._start_range = start_range
-        self._final_row_value = final_row_value
-
-    def range(self, addr):
-        # If asking for the starting cell, return the provided start range
-        if addr == self._starting_cell_addr:
-            return self._start_range
-        # If asking for the computed used_range_address (like 'A20'), return a range whose end('up').row = final_row_value
-        # We return a FakeRange whose end('up') returns a FakeRange with .row = _final_row_value
-        r = FakeRange(row=self._final_row_value)
-        return FakeRange().set_end_target(r)
 
 
 def get_current_directory():
