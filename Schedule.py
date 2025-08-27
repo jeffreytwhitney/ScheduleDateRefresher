@@ -59,6 +59,7 @@ class Schedule:
 
         if not os.path.isfile(filepath):
             self._logger.error(f"Schedule File Not Found:{filepath}")
+            xlapp.quit()
             raise ScheduleFileNotFoundError(self._schedule_info.file_path)
 
         xlbook = xlwings.Book(filepath, update_links=False, read_only=True)
