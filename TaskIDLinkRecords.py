@@ -5,7 +5,6 @@ import RefreshLogger
 import DB
 
 
-
 @dataclass
 class TaskIDLinkRecord:
     task_id: int
@@ -15,6 +14,7 @@ class TaskIDLinkRecord:
 
 class TaskIDLinkRecordWriter:
     _logger: logging.Logger
+
     def __init__(self, site_id: int):
         self._task_id_link_records: List[TaskIDLinkRecord] = []
         self._site_id = site_id

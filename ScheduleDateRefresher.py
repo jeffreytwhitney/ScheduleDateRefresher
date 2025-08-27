@@ -77,7 +77,7 @@ def process_schedules():
     for schedule_info in schedule_info_records:
         try:
             xlschedule = Schedule.Schedule(schedule_info)
-            processor = ScheduleProcessor(site_id, schedule_run, xlschedule, import_record_writer, task_name_link_writer)
+            processor = ScheduleProcessor(site_id, xlschedule, import_record_writer, task_name_link_writer)
             logger.info(f"Processing schedule {schedule_info.import_name}")
             processor.process_schedule()
             xlschedule.close()

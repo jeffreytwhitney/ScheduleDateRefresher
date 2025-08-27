@@ -33,9 +33,8 @@ class ScheduleProcessor:
     _current_task_name: str = ""
     _logger: logging.Logger
 
-    def __init__(self, site_id: int, schedule_run: ScheduleRun, schedule: Schedule, import_record_writer: ImportRecordWriter, task_name_link_record_writer: TaskNameLinkRecordWriter):
+    def __init__(self, site_id: int, schedule: Schedule, import_record_writer: ImportRecordWriter, task_name_link_record_writer: TaskNameLinkRecordWriter):
         self._logger = RefreshLogger.get_logger('scheduleProcessorLogger')
-        self._schedule_run = schedule_run
         self._schedule = schedule
         self._import_record_writer = import_record_writer
         self._task_name_link_record_writer = task_name_link_record_writer

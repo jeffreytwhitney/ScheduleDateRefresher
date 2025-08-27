@@ -17,13 +17,8 @@ def get_local_user_id() -> str:
 @dataclass
 class ScheduleRunConfig:
     schedule_run_id: int
-    run_datetime: datetime
-    start_date: datetime
-    end_date: datetime
     request_user_employee_number: str
-    request_user_name: str
     is_automated: bool
-    is_complete: str
 
 
 class ScheduleRun:
@@ -64,36 +59,8 @@ class ScheduleRun:
         return self._is_runnable
 
     @property
-    def is_complete(self) -> bool:
-        return self._schedule_run_config.is_complete == 1
-
-    @property
     def schedule_run_id(self) -> int:
         return self._schedule_run_config.schedule_run_id
-
-    @property
-    def run_datetime(self) -> datetime:
-        return self._schedule_run_config.run_datetime
-
-    @property
-    def start_date(self) -> datetime:
-        return self._schedule_run_config.start_date
-
-    @property
-    def end_date(self) -> datetime:
-        return self._schedule_run_config.end_date
-
-    @property
-    def request_user_employee_number(self) -> str:
-        return self._schedule_run_config.request_user_employee_number
-
-    @property
-    def request_user_name(self) -> str:
-        return self._schedule_run_config.request_user_name
-
-    @property
-    def is_automated(self) -> bool:
-        return self._schedule_run_config.is_automated
 
     def start_run(self) -> None:
         self._logger.debug("Starting schedule run.")
@@ -113,20 +80,16 @@ class ScheduleRun:
         record = DB.get_sql_recordset(sql)[0]
         return ScheduleRunConfig(
             record['ID'],
-            record['RunDateTime'],
-            record['StartTimestamp'],
-            record['CompletionTimestamp'],
             record['RequestUserEmployeeNumber'],
-            record['RequesterName'],
-            record['IsAutomated'],
-            record['IsComplete'])
+            record['IsAutomated'])
 
     def _create_local_run_entry(self):
         self._logger.debug("Creating local run entry.")
         create_datetime = datetime.now() - timedelta(minutes=1)
         sql: str = f"Update dbo.tblScheduleRunEntry Set IsComplete = 1 WHERE SiteID = {self._site_id} AND IsComplete = 0 And IsAutomated = 0"
         DB.execute_sql_statement(sql)
-        sql: str = f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, RequestUserEmployeeNumber, IsAutomated) values ({self._site_id}, '{create_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '{self._run_local_employee_number}', 0)"
+        sql: str = (f"Insert into dbo.tblScheduleRunEntry (SiteID, RunDateTime, RequestUserEmployeeNumber, IsAutomated) values ({self._site_id}, "
+                    f"'{create_datetime.strftime('%Y-%m-%d %H:%M:%S')}', '{self._run_local_employee_number}', 0)")
         DB.execute_sql_statement(sql)
 
     def _create_automated_run_entry(self):
