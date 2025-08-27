@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 
@@ -9,9 +10,9 @@ import Schedule
 
 
 def get_current_directory():
-    if getattr(sys, 'frozen', False):  # Check if running as an executable
+    if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
-    else:  # Running as a script
+    else:
         return os.path.dirname(os.path.abspath(__file__))
 
 
@@ -57,8 +58,11 @@ def test_load_schedule(mock_get_logger):
                               machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="#, PART #",
                               completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
     schedule = Schedule.Schedule(info)
-    assert schedule.is_new_section
-    schedule.close()
+    try:
+        assert schedule.is_new_section
+        assert schedule.row_count == 3137
+    finally:
+        schedule.close()
 
 
 @patch('Schedule.RefreshLogger.get_logger')
@@ -90,13 +94,14 @@ def test_initialization_success_sets_machine_name_and_row_count(mock_get_logger)
         schedule.offset()
         assert schedule.partnumber_value == "42517451010"
         assert schedule.schedule_id == 1
-        assert schedule.completion_date_value == "2025-08-25 00:00:00"
+        formatted_date_string = datetime.date.today().strftime("%Y-%m-%d %H:%M:%S")
+        assert schedule.completion_date_value == formatted_date_string
     finally:
         schedule.close()
 
 
 @patch('Schedule.RefreshLogger.get_logger')
-def test_partnumber_trimming_behavior(mock_get_logger):
+def test_partnumber_trimming_and_partnumber_float_behavior(mock_get_logger):
     mock_logger = MagicMock()
     mock_get_logger.return_value = mock_logger
     info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
@@ -111,6 +116,8 @@ def test_partnumber_trimming_behavior(mock_get_logger):
         schedule.offset()
         schedule.offset()
         assert schedule.partnumber_value == "42517450710"
+        schedule.offset()
+        assert schedule.partnumber_value == "42527450810"
     finally:
         schedule.close()
 
@@ -139,148 +146,113 @@ def test_get_next_row_behavior(mock_get_logger):
     finally:
         schedule.close()
 
-#
-#
-# def test_completion_date_parsing_and_validity():
-#     info = make_schedule_info(task_name_delimiter="TASK", completion_date_delimiter="DATE")
-#     start = FakeRange(value="TASK")
-#     completion = FakeRange(value="DATE")
-#     start.set_offset(0, info.completion_date_cell_offset, completion)
-#     machine = FakeRange(value="M", row=0)
-#     start.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, machine)
-#     sheet = FakeSheet(info.starting_cell_address, start, final_row_value=5)
-#
-#     app_patcher, book_patcher, fake_app, fake_book = setup_xlwings_mocks(start, sheet)
-#     with app_patcher, book_patcher, patch("os.path.isfile", return_value=True):
-#         s = Schedule.Schedule(info)
-#         try:
-#             # None completion -> empty value, min datetime, invalid
-#             s._completion_date_cell.value = None
-#             assert s.completion_date_value == ""
-#             assert s.completion_datetime == datetime.min
-#             assert not s.is_completion_date_valid
-#
-#             # Valid recent date
-#             recent = datetime.now().strftime("%Y-%m-%d")
-#             s._completion_date_cell.value = recent
-#             assert s.completion_date_value == recent
-#             assert s.completion_datetime.date().isoformat() == recent
-#             assert s.is_completion_date_valid is True
-#
-#             # Old date beyond min (set min to tomorrow to force invalid)
-#             s._min_completion_date = datetime.now() + timedelta(days=1)
-#             assert s.is_completion_date_valid is False
-#
-#             # Invalid parseable string
-#             s._completion_date_cell.value = "not-a-date"
-#             assert s.completion_datetime == datetime.min
-#             assert s.is_completion_date_valid is False
-#         finally:
-#             s.close()
-#
-#
-# def test_is_at_end_uses_row_count():
-#     info = make_schedule_info(task_name_delimiter="TASK", completion_date_delimiter="DATE")
-#     start = FakeRange(value="TASK", row=9)
-#     completion = FakeRange(value="DATE", row=9)
-#     start.set_offset(0, info.completion_date_cell_offset, completion)
-#     machine = FakeRange(value="M", row=8)
-#     start.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, machine)
-#
-#     final_row_value = 10
-#     sheet = FakeSheet(info.starting_cell_address, start, final_row_value=final_row_value)
-#
-#     app_patcher, book_patcher, fake_app, fake_book = setup_xlwings_mocks(start, sheet)
-#     with app_patcher, book_patcher, patch("os.path.isfile", return_value=True):
-#         s = Schedule.Schedule(info)
-#         try:
-#             s._row_count = 10
-#             s._partnumber_cell.row = 9
-#             assert s.is_at_end is False
-#
-#             s._partnumber_cell.row = 10
-#             assert s.is_at_end is True
-#         finally:
-#             s.close()
-#
-#
-# def test_get_next_row_updates_cells_and_sets_machine_unknown_when_none():
-#     info = make_schedule_info(
-#         task_name_delimiter="TASK",
-#         completion_date_delimiter="DATE",
-#         machine_name_offset_left=-1,
-#         machine_name_offset_up=-1,
-#         completion_date_cell_offset=1,
-#     )
-#     # First row (current)
-#     start = FakeRange(value="TASK", row=1)
-#     completion1 = FakeRange(value="DATE", row=1)
-#     start.set_offset(0, info.completion_date_cell_offset, completion1)
-#     machine1 = FakeRange(value="IGNORED", row=0)
-#     start.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, machine1)
-#
-#     # Next "down" row
-#     next_part = FakeRange(value="TASK", row=5)
-#     next_completion = FakeRange(value="DATE", row=5)
-#     next_machine = FakeRange(value=None, row=4)  # None -> should become UNKNOWN
-#     next_part.set_offset(0, info.completion_date_cell_offset, next_completion)
-#     next_part.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, next_machine)
-#
-#     # Configure start.end('down') to return next_part
-#     start.set_end_target(next_part)
-#
-#     sheet = FakeSheet(info.starting_cell_address, start, final_row_value=20)
-#     app_patcher, book_patcher, fake_app, fake_book = setup_xlwings_mocks(start, sheet)
-#     with app_patcher, book_patcher, patch("os.path.isfile", return_value=True):
-#         s = Schedule.Schedule(info)
-#         try:
-#             s.get_next_row()
-#             assert s.partnumber_cell is next_part
-#             assert s.completion_date_cell is next_completion
-#             assert s.machine_name == "UNKNOWN"
-#         finally:
-#             s.close()
-#
-#
-# def test_offset_uses_second_chance_for_machine_name():
-#     info = make_schedule_info(
-#         task_name_delimiter="TASK",
-#         completion_date_delimiter="DATE",
-#         machine_name_offset_left=-1,
-#         machine_name_offset_up=-1,
-#         completion_date_cell_offset=1,
-#     )
-#     # Current row is a delimiter row
-#     start = FakeRange(value="TASK", row=1)
-#     completion1 = FakeRange(value="DATE", row=1)
-#     start.set_offset(0, info.completion_date_cell_offset, completion1)
-#
-#     # Machine at (-1,-1) from current is None
-#     machine_current = FakeRange(value=None, row=0)
-#     start.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, machine_current)
-#
-#     # After offset by +1 row, new part/completion (still delimiter row)
-#     next_part = FakeRange(value="TASK", row=2)
-#     next_completion = FakeRange(value="DATE", row=2)
-#     # Hook the offset methods to return the next cells
-#     start.set_offset(1, 0, next_part)
-#     completion1.set_offset(1, 0, next_completion)
-#
-#     # For the new row, machine at (-1,-1) is None, but the "second chance" cell (offset(1,0)) has value
-#     machine_new_primary = FakeRange(value=None, row=1)
-#     machine_new_second = FakeRange(value="MACHINE-SECOND", row=2)
-#     next_part.set_offset(info.machine_name_offset_up, info.machine_name_offset_left, machine_new_primary)
-#     # machine_new_primary.offset(1,0) should return machine_new_second
-#     machine_new_primary.set_offset(1, 0, machine_new_second)
-#
-#     sheet = FakeSheet(info.starting_cell_address, start, final_row_value=10)
-#     app_patcher, book_patcher, fake_app, fake_book = setup_xlwings_mocks(start, sheet)
-#     with app_patcher, book_patcher, patch("os.path.isfile", return_value=True):
-#         s = Schedule.Schedule(info)
-#         try:
-#             s.offset()
-#             assert s.partnumber_cell is next_part
-#             assert s.completion_date_cell is next_completion
-#             assert s.machine_name == "MACHINE-SECOND"
-#         finally:
-#             s.close()
+
+@patch('Schedule.RefreshLogger.get_logger')
+def test_is_completion_date_valid_behavior(mock_get_logger):
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
+                              sheet_name="Schedule", starting_cell_address="D263", completion_date_cell_offset=23,
+                              machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="PART #",
+                              completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
+    schedule = Schedule.Schedule(info)
+    try:
+        assert schedule.machine_name == "CELL 3 (ROBO-03A/03B)"
+        assert schedule.row_count == 3137
+        schedule.offset()
+        schedule.offset()
+        assert schedule.partnumber_value == "42517050313"
+        assert schedule.is_completion_date_valid is False
+
+    finally:
+        schedule.close()
+
+
+@patch('Schedule.RefreshLogger.get_logger')
+def test_second_chance_machine_name_behavior(mock_get_logger):
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
+                              sheet_name="Schedule", starting_cell_address="D2227", completion_date_cell_offset=23,
+                              machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="PART #",
+                              completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
+    schedule = Schedule.Schedule(info)
+    try:
+        assert schedule.machine_name == "MIKRON-01"
+    finally:
+        schedule.close()
+
+
+@patch('Schedule.RefreshLogger.get_logger')
+def test_completion_date_too_early_behavior(mock_get_logger):
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
+                              sheet_name="Schedule", starting_cell_address="D2647", completion_date_cell_offset=23,
+                              machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="PART #",
+                              completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
+    schedule = Schedule.Schedule(info)
+    try:
+        schedule.offset()
+        assert schedule.partnumber_value == "123456798-009"
+        assert schedule.is_completion_date_valid is False
+    finally:
+        schedule.close()
+
+
+@patch('Schedule.RefreshLogger.get_logger')
+def test_machine_set_to_unknown_behavior(mock_get_logger):
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
+                              sheet_name="Schedule", starting_cell_address="D1911", completion_date_cell_offset=23,
+                              machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="PART #",
+                              completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
+    schedule = Schedule.Schedule(info)
+    try:
+        # Testing when first opening the schedule.
+        assert schedule.is_new_section is True
+        schedule.offset()
+        schedule.offset()
+        assert schedule.partnumber_value == "110029095-00"
+        assert schedule.is_completion_date_valid is True
+        assert schedule.machine_name == "UNKNOWN"
+
+        # Moving to the next section, does offset() function set machine_name to "UNKNOWN"
+        schedule.offset()
+        schedule.offset()
+        schedule.offset()
+        schedule.offset()
+        schedule.offset()
+        assert schedule.is_new_section is True
+        assert schedule.machine_name == "UNKNOWN"
+        schedule.offset()
+        schedule.offset()
+        assert schedule.partnumber_value == "110029098-00"
+
+        # Moving to the next section, does get_next_row() function set machine_name to "UNKNOWN"
+        schedule.get_next_row()
+        assert schedule.is_new_section is True
+        assert schedule.machine_name == "UNKNOWN"
+        schedule.offset()
+        schedule.offset()
+        assert schedule.partnumber_value == "110029099-00"
+
+    finally:
+        schedule.close()
+
+
+@patch('Schedule.RefreshLogger.get_logger')
+def test_is_at_end_uses_row_count(mock_get_logger):
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    info = make_schedule_info(schedule_id=1, is_active=True, site_id=1, import_name='Ortho Mill Dept 1', file_name="OrthoMill1.xlsx",
+                              sheet_name="Schedule", starting_cell_address="D3032", completion_date_cell_offset=23,
+                              machine_name_offset_left=-3, machine_name_offset_up=-2, task_name_delimiter="PART #",
+                              completion_date_delimiter="COMP DATE", do_part_name_trimming=True)
+    schedule = Schedule.Schedule(info)
+    assert schedule.is_new_section is True
+    schedule.offset()
+    schedule.get_next_row()
+    assert schedule.is_at_end is True
+

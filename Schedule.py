@@ -82,7 +82,14 @@ class Schedule:
             machine_offset_left = int(self._schedule_info.machine_name_offset_left)
             machine_offset_up = int(self._schedule_info.machine_name_offset_up)
             machine_name_cell = self._partnumber_cell.offset(machine_offset_up, machine_offset_left)
-            self._machine_name = machine_name_cell.value
+            if machine_name_cell.value is None:
+                machine_name_second_chance = machine_name_cell.offset(1, 0)
+                if machine_name_second_chance.value is None:
+                    self._machine_name = "UNKNOWN"
+                else:
+                    self._machine_name = str(machine_name_second_chance.value)
+            else:
+                self._machine_name = str(machine_name_cell.value)
         else:
             self._logger.error(f"Bad Headers in Schedule:{filepath}")
             if self._workbook:
@@ -145,6 +152,8 @@ class Schedule:
 
     @property
     def is_part_number_delimiter(self) -> bool:
+        if self._partnumber_cell.value is None:
+            return False
         part_number_value = str(self._partnumber_cell.value).upper().strip()
         return part_number_value in self._valid_part_delimiters
 
