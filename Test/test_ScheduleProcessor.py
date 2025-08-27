@@ -1,111 +1,58 @@
-import os
-import sys
-import types
 from typing import List
-from unittest.mock import patch, MagicMock
-
-import pytest
-
+import INIConfig
+import RefreshLogger
 import ScheduleDateRefresher
-from ImportRecords import ImportRecordWriter
+from Schedule import Schedule
 
 from ScheduleInfo import ScheduleInfo
-from mocks import FakeTaskWriter
-from mocks import FakeRun
-from mocks import FakeTaskIDLinkWriter
+from Tasks import Task, TaskWriter
+from mocks import FakeImportRecordWriter, FakeTaskIDLinkWriter
 from mocks import FakeTaskNameLinkWriter
+from mocks import make_schedule_info
+from mocks import FakeLogger
+from mocks import fake_ini
+from mocks import get_tasks
 
 
-def get_current_directory():
-    if getattr(sys, 'frozen', False):
-        return os.path.dirname(sys.executable)
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-
-
-def make_schedule_info(schedule_id: int, is_active: bool, site_id: int, import_name: str, file_name: str
-                       , sheet_name: str, starting_cell_address: str, completion_date_cell_offset: int,
-                       machine_name_offset_left: int, machine_name_offset_up: int, task_name_delimiter: str,
-                       completion_date_delimiter: str, do_part_name_trimming: bool):
-    current_directory = get_current_directory()
-    file_path = os.path.join(current_directory, file_name)
-    schedule_info = ScheduleInfo(schedule_id, is_active, site_id, import_name, file_path,
-                                 sheet_name, starting_cell_address, completion_date_cell_offset,
-                                 machine_name_offset_left, machine_name_offset_up, task_name_delimiter,
-                                 completion_date_delimiter, do_part_name_trimming)
-    return schedule_info
-
-
-def get_schedule_info_records(site_id: int) -> List[ScheduleInfo]:
-    return [make_schedule_info(1, True, site_id, "Ortho Mill Dept 1", "OrthoMill1.xlsx",
-                               "Schedule", "D6", 23, -3, -2, "#, PART #", "COMP DATE", True)]
-
-
-@pytest.fixture(autouse=True)
-def isolate_env(monkeypatch):
-    # Prevent Excel/OS operations
-    monkeypatch.setattr(ScheduleDateRefresher, "_is_excel_running", lambda: False, raising=True)
-    monkeypatch.setattr(ScheduleDateRefresher, "_force_close_excel", lambda: None, raising=True)
-
-    # Stub psutil and win32com usage (if any path touches them)
-    class _DummyProc:
-        info = {"name": ""}
-
-    monkeypatch.setattr("psutil.process_iter", lambda attrs=None: iter([_DummyProc()]), raising=False)
-    try:
-        import win32com.client as _w32
-        monkeypatch.setattr(_w32, "Dispatch", lambda *_a, **_k: types.SimpleNamespace(Quit=lambda: None), raising=False)
-    except Exception:
-        pass
-
-    # Stub INI values used by process_schedules
-    def fake_ini(section, key, app):
-        if (section, key) == ("Site", "site"):
-            return "1"
-        if (section, key) == ("Switches", "auto_not_scheduled"):
-            return "0"
-        if (section, key) == ("Switches", "run_local"):
-            return "0"
-        return "0"
-
-    import INIConfig
+def test_process_schedule(monkeypatch):
     monkeypatch.setattr(INIConfig, "GetStoredIniValue", fake_ini, raising=True)
+    monkeypatch.setattr(RefreshLogger, "get_logger", lambda *_a, **_k: FakeLogger(), raising=True)
 
-    # ScheduleRun stub: make it runnable but inert
+    schedule_info_record: ScheduleInfo = make_schedule_info(1, True, 1, "Ortho Mill Dept 1", "OrthoMill1.xlsx",
+                                                            "Schedule", "D6", 23, -3, -2, "#, PART #", "COMP DATE", True)
+    schedule = Schedule(schedule_info_record)
+    import_record_writer = FakeImportRecordWriter(1)
+    task_name_record_writer = FakeTaskNameLinkWriter(1)
+    schedule_processor = ScheduleDateRefresher.ScheduleProcessor(1, schedule, import_record_writer, task_name_record_writer)
+    schedule_processor.process_schedule()
+    schedule.close()
+    assert len(import_record_writer.import_records) == 117
+    assert len(task_name_record_writer.task_name_link_records) == 139
 
-    monkeypatch.setattr(ScheduleDateRefresher, "ScheduleRun", FakeRun, raising=True)
+    TaskWriter._get_tasks = get_tasks
+    task_writer = TaskWriter(site_id=1)
 
-    import ScheduleInfo
+    for import_record in import_record_writer.import_records:
+        if import_record.task_name == "04.315.301":
+            pass
+        task_writer.update_dates_by_taskname(import_record.task_name, import_record.due_date)
 
-    monkeypatch.setattr(ScheduleInfo, "get_schedule_info_records", lambda site_id: [], raising=True)
-
-    # Monkeypatch ImportRecordWriter.write_import_records_to_database to be a no-op
-    monkeypatch.setattr(ImportRecordWriter, "write_import_records_to_database", lambda self: None, raising=True)
-
-    monkeypatch.setattr(ScheduleDateRefresher, "TaskNameLinkRecordWriter", FakeTaskNameLinkWriter, raising=True)
-    monkeypatch.setattr(ScheduleDateRefresher, "TaskIDLinkRecordWriter", FakeTaskIDLinkWriter, raising=True)
+    updateded_tasks: List[Task] = task_writer.get_updated_tasks()
+    assert len(updateded_tasks) == 1
 
 
-@patch('Schedule.RefreshLogger.get_logger')
-def test_process_schedules_uses_mock_taskwriter(monkeypatch, mock_get_logger):
-    mock_logger = MagicMock()
-    mock_get_logger.return_value = mock_logger
+    # task_id_link_writer = FakeTaskIDLinkWriter(1)
+    # for task_name_link_record in task_name_record_writer.task_name_link_records:
+    #     tasks = task_writer.get_tasks_by_name(task_name_link_record.task_name)
+    #     for task in tasks:
+    #         if task_name_link_record.is_currently_running:
+    #             task.is_currently_running = True
+    #         task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
 
-    original_init = FakeTaskWriter.__init__
 
-    def tracking_init(self, site_id: int):
-        created.append(self)
-        original_init(self, site_id)
-
-    monkeypatch.setattr(FakeTaskWriter, "__init__", tracking_init, raising=True)
-
-    # Patch the TaskWriter used inside ScheduleDateRefresher to your mock class
-    monkeypatch.setattr(ScheduleDateRefresher, "TaskWriter", FakeTaskWriter, raising=True)
-
-    # Run
-    ScheduleDateRefresher.process_schedules()
-
-    # Assert our mock was instantiated and used
-    assert len(created) == 1, "MockTaskWriter was not instantiated by process_schedules"
-
-    # And its no-op methods should run without errors (covered by successful run)
+def test_bob(monkeypatch):
+    TaskWriter._get_tasks = get_tasks
+    task_writer = TaskWriter(site_id=1)
+    tasks = task_writer.get_tasks_by_name("04.315.301")
+    assert len(tasks) == 1
+    assert tasks[0].task_id == 197

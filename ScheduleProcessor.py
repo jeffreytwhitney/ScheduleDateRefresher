@@ -72,8 +72,8 @@ class ScheduleProcessor:
                 continue
 
             self._current_task_name = str(self._schedule.partnumber_value).replace("\"", "").replace("'", "")
-
-            if self._current_task_name == 'C20921-15':
+            print(self._current_task_name)
+            if self._current_task_name == '04.315.301':
                 # This is just for testing so that I can set a break point on a particular task name
                 pass
 
