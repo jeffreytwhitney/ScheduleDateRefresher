@@ -37,22 +37,23 @@ def test_process_schedule(monkeypatch):
             pass
         task_writer.update_dates_by_taskname(import_record.task_name, import_record.due_date)
 
-    updateded_tasks: List[Task] = task_writer.get_updated_tasks()
-    assert len(updateded_tasks) == 1
+    task_id_link_writer = FakeTaskIDLinkWriter(1)
+    for task_name_link_record in task_name_record_writer.task_name_link_records:
+        tasks = task_writer.get_tasks_by_name(task_name_link_record.task_name)
+        for task in tasks:
+            if task_name_link_record.is_currently_running:
+                task.is_currently_running = True
+            task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
 
+    updated_tasks: List[Task] = task_writer.get_updated_tasks()
+    assert len(updated_tasks) == 1
+    assert updated_tasks[0].task_id == 197
+    currently_running_tasks: List[Task] = task_writer.get_currently_running_tasks()
+    assert len(currently_running_tasks) == 1
+    assert currently_running_tasks[0].task_id == 9941
+    task_id_records = task_id_link_writer.task_id_link_records
+    assert len(task_id_records) == 2
+    assert task_id_records[0].task_id == 9941
+    assert task_id_records[0].linked_table_name_id == 1
+    assert task_id_records[0].machine_name == "CELL 1 (ROBO-01A/01B)"
 
-    # task_id_link_writer = FakeTaskIDLinkWriter(1)
-    # for task_name_link_record in task_name_record_writer.task_name_link_records:
-    #     tasks = task_writer.get_tasks_by_name(task_name_link_record.task_name)
-    #     for task in tasks:
-    #         if task_name_link_record.is_currently_running:
-    #             task.is_currently_running = True
-    #         task_id_link_writer.add_task_id_link_record(task.task_id, task_name_link_record.linked_table_name_id, task_name_link_record.machine_name)
-
-
-def test_bob(monkeypatch):
-    TaskWriter._get_tasks = get_tasks
-    task_writer = TaskWriter(site_id=1)
-    tasks = task_writer.get_tasks_by_name("04.315.301")
-    assert len(tasks) == 1
-    assert tasks[0].task_id == 197

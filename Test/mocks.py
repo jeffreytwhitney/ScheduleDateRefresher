@@ -92,6 +92,10 @@ class FakeTaskIDLinkWriter:
     def __init__(self, site_id):
         self.site_id = site_id
 
+    @property
+    def task_id_link_records(self):
+        return self._task_id_link_records
+
     def add_task_id_link_record(self, task_id, linked_table_name_id, machine_name):
         machine_name = machine_name.replace("\"", "").replace("'", "")
         self._task_id_link_records.append(TaskIDLinkRecord(task_id, linked_table_name_id, machine_name))
