@@ -139,14 +139,29 @@ class TaskWriter:
     def update_db_auto_not_scheduled(self):
         self._logger.debug("Updating database with auto not scheduled tasks.")
         with DB.DatabaseConnection(False) as db:
-            sql_statement = f"UPDATE dbo.tblTask SET tblTask.StatusID = 7 FROM tblProject RIGHT OUTER JOIN tblTask ON tblProject.ID = dbo.tblTask.ProjectID WHERE tblTask.StatusID = 1 AND dbo.tblProject.SiteID = {self._site_id} AND dbo.tblTask.ManualDueDate = 0 AND dbo.tblTask.AssignedToID IS NOT NULL AND NOT dbo.tblTask.TaskName IN (SELECT TaskName FROM dbo.tblImportMachineName WHERE SiteID = {self._site_id})"
+            sql_statement = (f"UPDATE dbo.tblTask SET tblTask.StatusID = 7 FROM tblProject RIGHT OUTER JOIN tblTask ON "
+                             f"tblProject.ID = dbo.tblTask.ProjectID WHERE tblTask.StatusID = 1 AND "
+                             f"dbo.tblProject.SiteID = {self._site_id} AND dbo.tblTask.ManualDueDate = 0 AND "
+                             f"dbo.tblTask.AssignedToID IS NOT NULL AND NOT dbo.tblTask.TaskName IN "
+                             f"(SELECT TaskName FROM dbo.tblImportMachineName WHERE SiteID = {self._site_id})")
+            db.execute_statement(sql_statement)
+
+    def write_active_task_counts_to_database(self) -> None:
+        self._logger.debug("Writing active task counts to database.")
+        with DB.DatabaseConnection(False) as db:
+            sql_statement = f"update tblProject set CountOfActiveTasks = 0 where SiteID = {self._site_id}"
+            db.execute_statement(sql_statement)
+            sql_statement = (f"Update tblProject SET tblProject.CountOfActiveTasks = qryCountOfActiveTasks.CountOfID FROM "
+                             f"dbo.tblProject INNER JOIN dbo.qryCountOfActiveTasks ON dbo.tblProject.ID = "
+                             f"dbo.qryCountOfActiveTasks.ProjectID WHERE tblProject.SiteID = {self._site_id}")
             db.execute_statement(sql_statement)
 
     def write_currently_running_tasks_to_database(self) -> None:
         self._logger.debug("Writing currently running tasks to database.")
         with DB.DatabaseConnection(False) as db:
             self._logger.debug("Reset all currently running tasks.")
-            sql_statement = f"UPDATE tblTask SET CurrentlyRunning = 0 FROM tblProject RIGHT OUTER JOIN tblTask ON tblProject.ID = tblTask.ProjectID WHERE tblProject.SiteID = {self._site_id}"
+            sql_statement = (f"UPDATE tblTask SET CurrentlyRunning = 0 FROM tblProject RIGHT OUTER JOIN tblTask ON "
+                             f"tblProject.ID = tblTask.ProjectID WHERE tblProject.SiteID = {self._site_id}")
             db.execute_statement(sql_statement)
             for task in self.get_currently_running_tasks():
                 if task.statusid == 7:
@@ -166,16 +181,21 @@ class TaskWriter:
         with DB.DatabaseConnection(False) as db:
             for task in self.get_updated_tasks():
                 if task.statusid == 7:
-                    self._logger.debug(
-                        f"Updating 'Not Schedled' task '{task.taskname}' to due date {task.duedate} and setting status to 'Not Started'.")
-                    sql_statement = f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', UpdateUserID = '{self._automated_user_id}', UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}"
+                    self._logger.debug(f"Updating 'Not Schedled' task '{task.taskname}' to due "
+                                       f"date {task.duedate} and setting status to 'Not Started'.")
+                    sql_statement = (f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', "
+                                     f"ScheduledDueDate = '{task.scheduledduedate}', "
+                                     f"UpdateUserID = '{self._automated_user_id}', "
+                                     f"UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}")
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:
                         self._logger.error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
                 else:
                     self._logger.debug(f"Updating task '{task.taskname}' to due date {task.duedate}.")
-                    sql_statement = f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', UpdateUserID = '{self._automated_user_id}', UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}"
+                    sql_statement = (f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', "
+                                     f"UpdateUserID = '{self._automated_user_id}', "
+                                     f"UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}")
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:
