@@ -1,0 +1,55 @@
+2025-09-03 05:21:34,803 - refreshLogger - INFO - Starting Run...
+2025-09-03 05:21:38,571 - refreshLogger - INFO - Processing schedule Additive Mill 1
+2025-09-03 05:22:12,812 - refreshLogger - INFO - Successfully processed schedule Additive Mill 1.
+2025-09-03 05:22:15,943 - refreshLogger - INFO - Processing schedule Ortho Lathe 1
+2025-09-03 05:22:22,234 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 1.
+2025-09-03 05:22:24,852 - refreshLogger - INFO - Processing schedule Ortho Lathe 2
+2025-09-03 05:22:41,068 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 2.
+2025-09-03 05:22:45,354 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 1
+2025-09-03 05:22:52,931 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 1.
+2025-09-03 05:22:57,125 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 2
+2025-09-03 05:23:18,276 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 2.
+2025-09-03 05:23:22,525 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 3
+2025-09-03 05:23:36,945 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 3.
+2025-09-03 05:23:41,082 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 4
+2025-09-03 05:24:04,641 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 4.
+2025-09-03 05:24:09,822 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 5
+2025-09-03 05:24:20,398 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 5.
+2025-09-03 05:24:23,513 - refreshLogger - INFO - Processing schedule Ortho Swiss 1
+2025-09-03 05:24:57,698 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 1.
+2025-09-03 05:25:04,632 - refreshLogger - INFO - Processing schedule Ortho Swiss 2
+2025-09-03 05:25:45,117 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 2.
+2025-09-03 05:25:49,224 - refreshLogger - INFO - Processing schedule Ortho Swiss 3
+2025-09-03 05:26:10,500 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 3.
+2025-09-03 05:26:13,386 - refreshLogger - INFO - Processing schedule Ortho Swiss 4
+2025-09-03 05:26:26,901 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 4.
+2025-09-03 05:26:31,829 - refreshLogger - INFO - Processing schedule Pacing Mills Robo
+2025-09-03 05:27:25,396 - refreshLogger - INFO - Successfully processed schedule Pacing Mills Robo.
+2025-09-03 05:27:30,376 - refreshLogger - INFO - Processing schedule Pacing Mills Micron
+2025-09-03 05:27:52,979 - refreshLogger - INFO - Successfully processed schedule Pacing Mills Micron.
+2025-09-03 05:27:58,418 - refreshLogger - INFO - Processing schedule Cardio Swiss 1
+2025-09-03 05:28:30,460 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 1.
+2025-09-03 05:28:36,355 - refreshLogger - INFO - Processing schedule Cardio Swiss 2
+2025-09-03 05:29:05,916 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 2.
+2025-09-03 05:29:09,485 - refreshLogger - INFO - Processing schedule Cardio Swiss 3
+2025-09-03 05:29:40,208 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 3.
+2025-09-03 05:29:45,077 - refreshLogger - INFO - Processing schedule Cardio Swiss 4
+2025-09-03 05:30:23,882 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 4.
+2025-09-03 05:30:29,041 - refreshLogger - INFO - Processing schedule Cardio Wires
+2025-09-03 05:30:52,513 - refreshLogger - INFO - Successfully processed schedule Cardio Wires.
+2025-09-03 05:30:57,306 - refreshLogger - INFO - Processing schedule Cardio HP Cell
+2025-09-03 05:31:00,646 - refreshLogger - INFO - Successfully processed schedule Cardio HP Cell.
+2025-09-03 05:31:03,444 - refreshLogger - INFO - Processing schedule Pacing Turning
+2025-09-03 05:31:18,825 - refreshLogger - INFO - Successfully processed schedule Pacing Turning.
+2025-09-03 05:31:27,495 - refreshLogger - INFO - Processing schedule Platinum Swiss Schedule
+2025-09-03 05:32:02,984 - refreshLogger - INFO - Successfully processed schedule Platinum Swiss Schedule.
+2025-09-03 05:32:05,426 - refreshLogger - INFO - Processing schedule Platinum Wires
+2025-09-03 05:32:21,574 - refreshLogger - INFO - Successfully processed schedule Platinum Wires.
+2025-09-03 05:32:24,135 - refreshLogger - INFO - Processing schedule Pacing Wires
+2025-09-03 05:32:39,360 - refreshLogger - INFO - Successfully processed schedule Pacing Wires.
+2025-09-03 05:32:41,532 - refreshLogger - INFO - Processing schedule Additive Mill 2
+2025-09-03 05:32:57,648 - refreshLogger - INFO - Successfully processed schedule Additive Mill 2.
+2025-09-03 05:32:59,352 - refreshLogger - INFO - Writing 1587 import records to the database
+2025-09-03 05:32:59,352 - refreshLogger - INFO - Writing 3221 task name link records to the database
+2025-09-03 05:33:15,622 - refreshLogger - INFO - Writing 381 task id link records to the database
+2025-09-03 05:33:17,367 - refreshLogger - INFO - Updating 198 task records

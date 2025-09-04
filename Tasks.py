@@ -161,7 +161,7 @@ class TaskWriter:
         with DB.DatabaseConnection(False) as db:
             self._logger.debug("Reset all currently running tasks.")
             sql_statement = (f"UPDATE tblTask SET CurrentlyRunning = 0 FROM tblProject RIGHT OUTER JOIN tblTask ON "
-                             f"tblProject.ID = tblTask.ProjectID WHERE tblProject.SiteID = {self._site_id}")
+                             f"tblProject.ID = tblTask.ProjectID WHERE tblProject.SiteID = {self._site_id} AND CurrentlyRunning = 1")
             db.execute_statement(sql_statement)
             for task in self.get_currently_running_tasks():
                 if task.statusid == 7:
