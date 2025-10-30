@@ -1,20 +1,30 @@
+import logging
 import os
+import shutil
+import sys
+import tempfile
+from collections import deque
 
 import psutil
 import win32com.client
 
 import INIConfig
+import RefreshLogger
 import Schedule
 import ScheduleInfo
 from ImportRecords import ImportRecordWriter
-import logging
-
 from ScheduleProcessor import ScheduleProcessor
 from ScheduleRun import ScheduleRun
 from TaskIDLinkRecords import TaskIDLinkRecordWriter
 from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
-import RefreshLogger
+
+
+def _get_current_directory():
+    if getattr(sys, 'frozen', False):  # Check if running as an executable
+        return os.path.dirname(sys.executable)
+    else:  # Running as a script
+        return os.path.dirname(os.path.abspath(__file__))
 
 
 def _is_excel_running():
@@ -34,6 +44,65 @@ def _force_close_excel():
 
     # Forcefully terminate Excel processes if still running
     os.system("taskkill /f /im excel.exe")
+
+
+def _trim_log_file(log_file_name: str, max_lines: int = 10000, encoding: str = "utf-8") -> None:
+    """
+    Trim the file at `path` so it contains at most `max_lines` last lines.
+
+    - Reads the file line-by-line (low memory: only keeps up to max_lines in memory).
+    - If the file already has <= max_lines, it is left untouched.
+
+    """
+    if max_lines < 0:
+        raise ValueError("max_lines must be non-negative")
+
+    current_dir = _get_current_directory()
+    log_file_path = current_dir + "\\" + log_file_name + ".txt"
+
+    if not os.path.exists(log_file_path):
+        return
+
+    dq = deque(maxlen=max_lines)
+    total = 0
+
+    with open(log_file_path, "r", encoding=encoding, errors="replace") as f:
+        for line in f:
+            dq.append(line)
+            total += 1
+
+    kept = len(dq)
+
+    # If nothing to trim, return early
+    if total <= max_lines:
+        return
+
+    # Write to a temp file in the same directory and atomically replace
+    dirpath = os.path.dirname(log_file_path) or "."
+    fd, tmp_path = tempfile.mkstemp(dir=dirpath, prefix=".trimtmp-", text=True)
+    try:
+        # Open fd as a file object to allow specifying encoding and fsync
+        with os.fdopen(fd, "w", encoding=encoding, errors="replace") as tmpf:
+            tmpf.writelines(dq)
+            tmpf.flush()
+            os.fsync(tmpf.fileno())
+
+        # Preserve metadata (mode, timestamps) from original
+        try:
+            shutil.copystat(log_file_path, tmp_path)
+        except Exception:
+            # If we can't copy metadata (e.g., permission), continue anyway
+            pass
+
+        # Atomic replace
+        os.replace(tmp_path, log_file_path)
+    except Exception:
+        # Clean up tmp file on error
+        try:
+            os.remove(tmp_path)
+        except Exception:
+            pass
+        raise
 
 
 def process_schedules():
@@ -160,6 +229,7 @@ if __name__ == '__main__':
             _force_close_excel()
 
     process_schedules()
+    _trim_log_file("ScheduleRefreshLog")
 
     if run_local_integer > 0:
         input("Press Enter to exit...")

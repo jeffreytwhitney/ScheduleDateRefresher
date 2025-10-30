@@ -37,9 +37,10 @@ def run_test():
     import_record_writer = ImportRecordWriter(site_id)
     task_name_link_writer = TaskNameLinkRecordWriter(site_id)
 
-    schedule_info = [info for info in schedule_info_records if info.import_name == 'Cardio Swiss 3']
+    schedule_info = [info for info in schedule_info_records if info.import_name == 'MILLING 1']
     xlschedule = Schedule(schedule_info[0])
-    processor = ScheduleProcessor(site_id, schedule_run, xlschedule, import_record_writer, task_name_link_writer)
+
+    processor = ScheduleProcessor(site_id, xlschedule, import_record_writer, task_name_link_writer)
     processor.process_schedule()
 
     task_id_link_writer = TaskIDLinkRecordWriter(site_id)
