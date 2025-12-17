@@ -46,7 +46,7 @@ def _force_close_excel():
     os.system("taskkill /f /im excel.exe")
 
 
-def _trim_log_file(log_file_name: str, max_lines: int = 10000, encoding: str = "utf-8") -> None:
+def _trim_log_file(log_file_name: str, max_lines: int = 5000, encoding: str = "utf-8") -> None:
     """
     Trim the file at `path` so it contains at most `max_lines` last lines.
 
@@ -70,8 +70,6 @@ def _trim_log_file(log_file_name: str, max_lines: int = 10000, encoding: str = "
         for line in f:
             dq.append(line)
             total += 1
-
-    kept = len(dq)
 
     # If nothing to trim, return early
     if total <= max_lines:
@@ -228,8 +226,8 @@ if __name__ == '__main__':
         else:
             _force_close_excel()
 
-    process_schedules()
     _trim_log_file("ScheduleRefreshLog")
+    process_schedules()
 
     if run_local_integer > 0:
         input("Press Enter to exit...")
