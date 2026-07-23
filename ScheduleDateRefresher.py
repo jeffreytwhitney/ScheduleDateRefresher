@@ -155,7 +155,7 @@ def process_schedules():
                                               "scheduleid": {schedule_info.schedule_id}})
 
         except Schedule.ScheduleBadHeadersError:
-            xlschedule.close()
+
             error_count += 1
             error_message = f"The headers (columns) for schedule {schedule_info.import_name} have change. Cannot process file."
             logger.error(error_message)
@@ -168,7 +168,7 @@ def process_schedules():
             logger.error(error_message)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
-            xlschedule.close()
+
 
         except Exception:
             error_count += 1
@@ -176,7 +176,7 @@ def process_schedules():
             logger.error(error_message)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
-            xlschedule.close()
+
 
     task_id_link_writer = TaskIDLinkRecordWriter(site_id)
     task_writer = TaskWriter(site_id)

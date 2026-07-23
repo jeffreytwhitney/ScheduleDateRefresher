@@ -53,3 +53,88 @@
 2025-09-03 05:32:59,352 - refreshLogger - INFO - Writing 3221 task name link records to the database
 2025-09-03 05:33:15,622 - refreshLogger - INFO - Writing 381 task id link records to the database
 2025-09-03 05:33:17,367 - refreshLogger - INFO - Updating 198 task records
+2026-07-23 06:52:13,093 - refreshLogger - INFO - Starting Run...
+2026-07-23 06:52:15,973 - scheduleLogger - ERROR - Bad Headers in Schedule:\\cretexinc.com\rmsdfs\additive\Additive Manufacturing Area\Additive Mill Area\Mill Schedule\Additive Mill SCHEDULE 1.xlsm
+2026-07-23 06:55:59,758 - refreshLogger - INFO - Starting Run...
+2026-07-23 06:58:06,141 - scheduleLogger - ERROR - Bad Headers in Schedule:\\cretexinc.com\rmsdfs\additive\Additive Manufacturing Area\Additive Mill Area\Mill Schedule\Additive Mill SCHEDULE 1.xlsm
+2026-07-23 06:59:33,171 - refreshLogger - INFO - Starting Run...
+2026-07-23 06:59:35,538 - scheduleLogger - ERROR - Bad Headers in Schedule:\\cretexinc.com\rmsdfs\additive\Additive Manufacturing Area\Additive Mill Area\Mill Schedule\Additive Mill SCHEDULE 1.xlsm
+2026-07-23 06:59:36,248 - refreshLogger - ERROR - The headers (columns) for schedule Additive Mill 1 have change. Cannot process file.
+2026-07-23 06:59:39,209 - refreshLogger - INFO - Processing schedule Ortho Lathe 1
+2026-07-23 06:59:48,256 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 1.
+2026-07-23 06:59:51,364 - refreshLogger - INFO - Processing schedule Ortho Lathe 2
+2026-07-23 06:59:58,607 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 2.
+2026-07-23 07:00:02,873 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 1
+2026-07-23 07:00:16,840 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 1.
+2026-07-23 07:00:20,269 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 2
+2026-07-23 07:00:26,254 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 2.
+2026-07-23 07:00:30,855 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 3
+2026-07-23 07:00:53,843 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 3.
+2026-07-23 07:00:57,570 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 4
+2026-07-23 07:01:15,217 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 4.
+2026-07-23 07:01:18,890 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 5
+2026-07-23 07:01:32,728 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 5.
+2026-07-23 07:01:36,273 - refreshLogger - INFO - Processing schedule Ortho Swiss 1
+2026-07-23 07:01:57,736 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 1.
+2026-07-23 07:02:06,854 - refreshLogger - INFO - Processing schedule Ortho Swiss 2
+2026-07-23 07:03:23,144 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 2.
+2026-07-23 07:03:26,276 - refreshLogger - INFO - Processing schedule Ortho Swiss 3
+2026-07-23 07:04:03,060 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 3.
+2026-07-23 07:04:05,926 - refreshLogger - INFO - Processing schedule Ortho Swiss 4
+2026-07-23 07:04:23,655 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 4.
+2026-07-23 07:04:26,560 - refreshLogger - INFO - Processing schedule Pacing Mills Robo
+2026-07-23 07:05:42,300 - refreshLogger - INFO - Successfully processed schedule Pacing Mills Robo.
+2026-07-23 07:05:45,991 - refreshLogger - INFO - Processing schedule Pacing Mills Micron
+2026-07-23 07:05:54,487 - refreshLogger - ERROR - Processing error for schedule Pacing Mills Micron.
+2026-07-23 07:06:55,832 - refreshLogger - INFO - Starting Run...
+2026-07-23 07:06:57,971 - scheduleLogger - ERROR - Bad Headers in Schedule:\\cretexinc.com\rmsdfs\additive\Additive Manufacturing Area\Additive Mill Area\Mill Schedule\Additive Mill SCHEDULE 1.xlsm
+2026-07-23 07:06:58,687 - refreshLogger - ERROR - The headers (columns) for schedule Additive Mill 1 have change. Cannot process file.
+2026-07-23 07:07:01,235 - refreshLogger - INFO - Processing schedule Ortho Lathe 1
+2026-07-23 07:07:10,201 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 1.
+2026-07-23 07:07:13,270 - refreshLogger - INFO - Processing schedule Ortho Lathe 2
+2026-07-23 07:07:28,758 - refreshLogger - INFO - Successfully processed schedule Ortho Lathe 2.
+2026-07-23 07:07:32,806 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 1
+2026-07-23 07:07:59,304 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 1.
+2026-07-23 07:08:03,044 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 2
+2026-07-23 07:08:13,509 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 2.
+2026-07-23 07:08:17,946 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 3
+2026-07-23 07:08:54,319 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 3.
+2026-07-23 07:08:58,761 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 4
+2026-07-23 07:09:23,811 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 4.
+2026-07-23 07:09:27,501 - refreshLogger - INFO - Processing schedule Ortho Mill Dept 5
+2026-07-23 07:09:42,063 - refreshLogger - INFO - Successfully processed schedule Ortho Mill Dept 5.
+2026-07-23 07:09:46,038 - refreshLogger - INFO - Processing schedule Ortho Swiss 1
+2026-07-23 07:10:06,370 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 1.
+2026-07-23 07:10:15,812 - refreshLogger - INFO - Processing schedule Ortho Swiss 2
+2026-07-23 07:11:02,954 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 2.
+2026-07-23 07:11:05,936 - refreshLogger - INFO - Processing schedule Ortho Swiss 3
+2026-07-23 07:11:25,064 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 3.
+2026-07-23 07:11:27,727 - refreshLogger - INFO - Processing schedule Ortho Swiss 4
+2026-07-23 07:11:36,853 - refreshLogger - INFO - Successfully processed schedule Ortho Swiss 4.
+2026-07-23 07:11:39,624 - refreshLogger - INFO - Processing schedule Pacing Mills Robo
+2026-07-23 07:12:21,012 - refreshLogger - INFO - Successfully processed schedule Pacing Mills Robo.
+2026-07-23 07:12:23,809 - refreshLogger - INFO - Processing schedule Pacing Mills Micron
+2026-07-23 07:12:58,158 - refreshLogger - INFO - Successfully processed schedule Pacing Mills Micron.
+2026-07-23 07:13:07,684 - refreshLogger - INFO - Processing schedule Cardio Swiss 1
+2026-07-23 07:13:55,080 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 1.
+2026-07-23 07:14:03,772 - refreshLogger - INFO - Processing schedule Cardio Swiss 4
+2026-07-23 07:15:04,145 - refreshLogger - INFO - Successfully processed schedule Cardio Swiss 4.
+2026-07-23 07:15:13,152 - refreshLogger - INFO - Processing schedule Cardio Wires
+2026-07-23 07:15:49,347 - refreshLogger - INFO - Successfully processed schedule Cardio Wires.
+2026-07-23 07:15:53,046 - refreshLogger - INFO - Processing schedule Cardio HP Cell
+2026-07-23 07:15:56,193 - refreshLogger - INFO - Successfully processed schedule Cardio HP Cell.
+2026-07-23 07:16:00,965 - refreshLogger - INFO - Processing schedule Pacing Turning
+2026-07-23 07:16:17,445 - refreshLogger - INFO - Successfully processed schedule Pacing Turning.
+2026-07-23 07:16:26,830 - refreshLogger - INFO - Processing schedule Platinum Swiss Schedule
+2026-07-23 07:17:08,578 - refreshLogger - INFO - Successfully processed schedule Platinum Swiss Schedule.
+2026-07-23 07:17:13,188 - refreshLogger - INFO - Processing schedule Platinum Wires
+2026-07-23 07:17:29,570 - refreshLogger - INFO - Successfully processed schedule Platinum Wires.
+2026-07-23 07:17:34,157 - refreshLogger - INFO - Processing schedule Pacing Wires
+2026-07-23 07:17:52,116 - refreshLogger - INFO - Successfully processed schedule Pacing Wires.
+2026-07-23 07:17:54,009 - refreshLogger - INFO - Processing schedule Additive Mill 2
+2026-07-23 07:18:29,399 - refreshLogger - INFO - Successfully processed schedule Additive Mill 2.
+2026-07-23 07:18:29,736 - refreshLogger - INFO - Writing 1267 import records to the database
+2026-07-23 07:18:29,736 - refreshLogger - INFO - Writing 2926 task name link records to the database
+2026-07-23 07:18:39,679 - refreshLogger - INFO - Writing 67 task id link records to the database
+2026-07-23 07:18:39,975 - refreshLogger - INFO - Updating 47 task records
+2026-07-23 07:18:40,664 - refreshLogger - INFO - Done processing schedules.
