@@ -54,7 +54,7 @@ def test_emit_missing_ids_no_db_call(mock_execute):
     mock_execute.assert_not_called()
 
 
-@patch('RefreshLogger.INIConfig.GetStoredIniValue', return_value='DEBUG')
+@patch('RefreshLogger.Config.get_env_value', return_value='DEBUG')
 @patch('RefreshLogger.logging.FileHandler')
 @patch('RefreshLogger.logging.StreamHandler')
 def test_get_logger_debug(mock_stream, mock_file, mock_ini):
@@ -64,7 +64,7 @@ def test_get_logger_debug(mock_stream, mock_file, mock_ini):
     assert mock_file.called
 
 
-@patch('RefreshLogger.INIConfig.GetStoredIniValue', return_value='INFO')
+@patch('RefreshLogger.Config.get_env_value', return_value='INFO')
 @patch('RefreshLogger.logging.FileHandler')
 @patch('RefreshLogger.logging.StreamHandler')
 def test_get_logger_info(mock_stream, mock_file, mock_ini):

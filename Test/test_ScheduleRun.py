@@ -5,7 +5,7 @@ from ScheduleRun import ScheduleRun, ScheduleRunConfig
 
 
 @patch('ScheduleRun.RefreshLogger.get_logger')
-@patch('ScheduleRun.INIConfig.GetStoredIniValue')
+@patch('ScheduleRun.Config.get_env_value')
 @patch('ScheduleRun.DB.get_sql_scalar')
 @patch('ScheduleRun.DB.get_sql_recordset')
 @patch('ScheduleRun.os.getlogin')
@@ -38,7 +38,7 @@ def test_init_runnable_local_run(
 
 
 @patch('ScheduleRun.RefreshLogger.get_logger')
-@patch('ScheduleRun.INIConfig.GetStoredIniValue')
+@patch('ScheduleRun.Config.get_env_value')
 @patch('ScheduleRun.DB.get_sql_scalar')
 @patch('ScheduleRun.DB.get_sql_recordset')
 def test_init_not_runnable(

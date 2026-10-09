@@ -3,7 +3,7 @@ import os
 import sys
 
 import DB
-import INIConfig
+import Config
 
 
 class SQLServerHandler(logging.Handler):
@@ -37,7 +37,7 @@ def get_current_directory():
 
 def get_logger(logger_name) -> logging.Logger:
     logger = logging.getLogger(logger_name)
-    logger_level = INIConfig.GetStoredIniValue("Loggers", logger_name, "ScheduleImporter")
+    logger_level = Config.get_env_value(Config.get_logger_level_key(logger_name), "INFO").upper()
     if logger_level == "DEBUG":
         logger.setLevel(logging.DEBUG)
     else:

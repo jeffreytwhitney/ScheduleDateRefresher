@@ -1,6 +1,6 @@
 import os
 import dateutil
-from dateutil.parser import parse
+
 from datetime import datetime, timedelta
 import RefreshLogger
 import logging
@@ -64,13 +64,13 @@ class Schedule:
 
         xlbook = xlwings.Book(filepath, update_links=False, read_only=True)
         xlsheet = xlbook.sheets[sheetname]
-        xlpartRange = xlsheet.range(partnumber_address)
-        xlcompletionRange = xlpartRange.offset(0, completion_offset)
+        xl_range = xlsheet.range(partnumber_address)
+        xlcompletion_range = xl_range.offset(0, completion_offset)
 
         self._workbook = xlbook
         self._sheet = xlsheet
-        self._partnumber_cell = xlpartRange
-        self._completion_date_cell = xlcompletionRange
+        self._partnumber_cell = xl_range
+        self._completion_date_cell = xlcompletion_range
         self._used_range = xlsheet.used_range
 
         rowcount = xlsheet.used_range.rows.count

@@ -23,21 +23,21 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
    DB_NAME=your-database-name
    ```
 
-   Keep credentials private; do not commit `.env`.
-4. Configure `ScheduleImporter.ini` for the target site and run behavior. The active schedules, Excel file paths, sheet names, and cell layouts are read from SQL Server.
+   Add the site and run settings to the same file (see Configuration below). Keep credentials private; do not commit `.env`.
+4. Set the target site and run behavior in `.env`. The active schedules, Excel file paths, sheet names, and cell layouts are read from SQL Server.
 5. Ensure the configured Excel files are accessible to the Windows account running the program.
 
 ## Configuration
 
-`ScheduleImporter.ini` is read from the same directory as the application.
+Settings are read from environment variables, loaded from `.env` in the application directory.
 
-| Section | Key | Purpose |
-| --- | --- | --- |
-| `Site` | `site` | SQL Server site ID to process |
-| `Site` | `automated_user_id` | Employee number used for automated task updates |
-| `Switches` | `run_local` | `1` creates a local run entry and waits for confirmation before exit; `0` processes the scheduled run and closes Excel if Excel is already running |
-| `Switches` | `auto_not_scheduled` | `1` enables marking tasks not represented in schedules as “Not Scheduled” when task link records were found |
-| `Loggers` | logger names | Set each logger to `DEBUG` or `INFO` |
+| Variable | Purpose |
+| --- | --- |
+| `SITE` | SQL Server site ID to process |
+| `AUTOMATED_USER_ID` | Employee number used for automated task updates |
+| `RUN_LOCAL` | `1` creates a local run entry and waits for confirmation before exit; `0` processes the scheduled run and closes Excel if Excel is already running |
+| `AUTO_NOT_SCHEDULED` | `1` enables marking tasks not represented in schedules as "Not Scheduled" when task link records were found |
+| `LOG_LEVEL_<LOGGERNAME>` | `DEBUG` or `INFO` per logger, e.g. `LOG_LEVEL_TASKLOGGER` (default `INFO`) |
 
 The application reads database connection values from the environment (or `.env`). Schedule-specific settings, including file path, worksheet, part-number cell, date offset, and delimiters, come from active records in `tblLinkedTableNames`.
 

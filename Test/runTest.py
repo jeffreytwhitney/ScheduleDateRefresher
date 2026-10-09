@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import DB
-import INIConfig
+import Config
 import ScheduleInfo
 from ImportRecords import ImportRecordWriter
 from Schedule import Schedule
@@ -29,7 +29,7 @@ def run_auto_not_scheduled():
 
 
 def run_test():
-    site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
+    site_id = int(Config.get_env_value("SITE", "0"))
     schedule_run = ScheduleRun(site_id)
     test_run_id = schedule_run.schedule_run_id
     schedule_run.start_run()

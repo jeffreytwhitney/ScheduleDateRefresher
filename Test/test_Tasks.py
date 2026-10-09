@@ -25,7 +25,7 @@ def test_task_set_is_currently_running():
 
 
 @patch('Tasks.RefreshLogger.get_logger')
-@patch('Tasks.INIConfig.GetStoredIniValue')
+@patch('Tasks.Config.get_env_value')
 @patch('Tasks.DB.get_sql_recordset')
 def test_taskwriter_get_tasks_by_name(mock_get_sql, mock_ini, mock_logger):
     mock_ini.return_value = "auto_user"
@@ -44,7 +44,7 @@ def test_taskwriter_get_tasks_by_name(mock_get_sql, mock_ini, mock_logger):
 
 
 @patch('Tasks.RefreshLogger.get_logger')
-@patch('Tasks.INIConfig.GetStoredIniValue')
+@patch('Tasks.Config.get_env_value')
 @patch('Tasks.DB.get_sql_recordset')
 def test_taskwriter_updated_and_running_tasks(mock_get_sql, mock_ini, mock_logger):
     mock_ini.return_value = "auto_user"
@@ -64,7 +64,7 @@ def test_taskwriter_updated_and_running_tasks(mock_get_sql, mock_ini, mock_logge
 
 
 @patch('Tasks.RefreshLogger.get_logger')
-@patch('Tasks.INIConfig.GetStoredIniValue')
+@patch('Tasks.Config.get_env_value')
 @patch('Tasks.DB.get_sql_recordset')
 def test_taskwriter_update_dates_by_taskname(mock_get_sql, mock_ini, mock_logger):
     mock_ini.return_value = "auto_user"
@@ -83,7 +83,7 @@ def test_taskwriter_update_dates_by_taskname(mock_get_sql, mock_ini, mock_logger
 
 
 @patch('Tasks.RefreshLogger.get_logger')
-@patch('Tasks.INIConfig.GetStoredIniValue')
+@patch('Tasks.Config.get_env_value')
 @patch('Tasks.DB.get_sql_recordset')
 @patch('Tasks.DB.DatabaseConnection')
 def test_taskwriter_write_updated_tasks_to_database(mock_db_conn, mock_get_sql, mock_ini, mock_logger):

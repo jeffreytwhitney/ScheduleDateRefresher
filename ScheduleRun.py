@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, time
 import logging
 import DB
-import INIConfig
+import Config
 import RefreshLogger
 
 
@@ -34,7 +34,7 @@ class ScheduleRun:
         self._logger = RefreshLogger.get_logger('scheduleRunLogger')
 
         self._site_id = site_id
-        run_local_integer = int(INIConfig.GetStoredIniValue("Switches", "run_local", "ScheduleImporter"))
+        run_local_integer = int(Config.get_env_value("RUN_LOCAL", "0"))
         self._logger.debug(f"Run Local: {run_local_integer}")
 
         self._run_local = run_local_integer > 0

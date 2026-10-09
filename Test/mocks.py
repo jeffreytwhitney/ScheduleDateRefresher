@@ -65,11 +65,8 @@ def get_schedule_info_records(site_id: int) -> List[ScheduleInfo]:
                                "Schedule", "D6", 23, -3, -2, "#, PART #", "COMP DATE", True)]
 
 
-def fake_ini(section, key, app):
-    if (section, key) == ("Site", "site"):
-        return "1"
-    if (section, key) == ("Switches", "auto_not_scheduled"):
-        return "0"
+def fake_env(key, default=""):
+    return {"SITE": "1", "AUTO_NOT_SCHEDULED": "0", "RUN_LOCAL": "0"}.get(key, "0")
     if (section, key) == ("Switches", "run_local"):
         return "0"
     return "0"

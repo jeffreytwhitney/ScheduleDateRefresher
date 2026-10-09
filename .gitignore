@@ -69,7 +69,6 @@
 /.idea/ScheduleDateRefresher.iml
 /Output/build/ScheduleDateRefresher/ScheduleDateRefresher.pkg
 /Output/ScheduleDateRefresher.spec
-/Output/ScheduleDateRefresher/_internal/ScheduleImporter.ini
 /Output/ScheduleDateRefresher/ScheduleRefreshLog.txt
 /Output/ScheduleDateRefresher/_internal/select.pyd
 /Output/ScheduleDateRefresher/_internal/win32com/shell/shell.pyd

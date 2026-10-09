@@ -7,6 +7,7 @@ from typing import List
 class ScheduleInfo:
     schedule_id: int
     is_active: bool
+    is_remote: bool
     site_id: int
     import_name: str
     file_path: str
@@ -52,6 +53,7 @@ def _create_schedule_from_record(record: dict) -> ScheduleInfo:
     config = ScheduleInfo(
         schedule_id=record['ID'],
         is_active=record['IsActive'],
+        is_remote=record['IsRemote'],
         site_id=record['SiteID'],
         import_name=record['ImportName'],
         file_path=record['FilePath'],
@@ -68,6 +70,7 @@ def _create_schedule_from_record(record: dict) -> ScheduleInfo:
     return ScheduleInfo(
         config.schedule_id,
         config.is_active,
+        config.is_remote,
         config.site_id,
         config.import_name,
         config.file_path,

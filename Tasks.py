@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 import DB
-import INIConfig
+import Config
 import RefreshLogger
 import logging
 
@@ -100,7 +100,7 @@ class TaskWriter:
         self._updated = None
         self._site_id = site_id
         self._tasks = self._get_tasks()
-        self._automated_user_id = str(INIConfig.GetStoredIniValue("Site", "automated_user_id", "ScheduleImporter"))
+        self._automated_user_id = str(Config.get_env_value("AUTOMATED_USER_ID"))
         self._logger = RefreshLogger.get_logger('taskLogger')
 
     def _get_tasks(self) -> List[Task]:

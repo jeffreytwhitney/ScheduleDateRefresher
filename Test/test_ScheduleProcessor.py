@@ -3,14 +3,14 @@ from typing import List
 import pytest
 
 import DB
-import INIConfig
+import Config
 import RefreshLogger
 import ScheduleDateRefresher
 from Schedule import Schedule
 from ScheduleInfo import ScheduleInfo
 from Tasks import Task, TaskWriter
 from mocks import FakeImportRecordWriter, FakeTaskIDLinkWriter, FakeTaskNameLinkWriter, make_schedule_info, FakeLogger, \
-    fake_ini, get_tasks
+    fake_env, get_tasks
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def schedule_info():
 
 @pytest.mark.skip(reason="I only run this when I need to see if it processed a particular schedule and found a specific part number.")
 def test_for_specific_partnumber_in_specific_schedule(monkeypatch, schedule_info):
-    monkeypatch.setattr(INIConfig, "GetStoredIniValue", fake_ini, raising=True)
+    monkeypatch.setattr(Config, "get_env_value", fake_env, raising=True)
     monkeypatch.setattr(RefreshLogger, "get_logger", lambda *_a, **_k: FakeLogger(), raising=True)
     schedule = Schedule(schedule_info)
     import_record_writer = FakeImportRecordWriter(1)
@@ -67,7 +67,7 @@ def test_for_specific_partnumber_in_specific_schedule(monkeypatch, schedule_info
 
 
 def test_process_schedule(monkeypatch):
-    monkeypatch.setattr(INIConfig, "GetStoredIniValue", fake_ini, raising=True)
+    monkeypatch.setattr(Config, "get_env_value", fake_env, raising=True)
     monkeypatch.setattr(RefreshLogger, "get_logger", lambda *_a, **_k: FakeLogger(), raising=True)
 
     schedule_info_record: ScheduleInfo = make_schedule_info(1, True, 1, "Ortho Mill Dept 1", "OrthoMill1.xlsx",

@@ -8,7 +8,7 @@ from collections import deque
 import psutil
 import win32com.client
 
-import INIConfig
+import Config
 import RefreshLogger
 import Schedule
 import ScheduleInfo
@@ -121,10 +121,10 @@ def process_schedules():
     error_count: int = 0
     logger.info("Starting Run...")
 
-    site_id = int(INIConfig.GetStoredIniValue("Site", "site", "ScheduleImporter"))
+    site_id = int(Config.get_env_value("SITE", "0"))
     logger.debug(f"Site ID: {site_id}")
 
-    auto_not_scheduled = int(INIConfig.GetStoredIniValue("Switches", "auto_not_scheduled", "ScheduleImporter"))
+    auto_not_scheduled = int(Config.get_env_value("AUTO_NOT_SCHEDULED", "0"))
     logger.debug(f"Auto Not Scheduled: {auto_not_scheduled}")
 
     schedule_run = ScheduleRun(site_id)
@@ -217,7 +217,7 @@ def process_schedules():
 
 if __name__ == '__main__':
     excel_is_running = _is_excel_running()
-    run_local_integer = int(INIConfig.GetStoredIniValue("Switches", "run_local", "ScheduleImporter"))
+    run_local_integer = int(Config.get_env_value("RUN_LOCAL", "0"))
 
     if excel_is_running:
         if run_local_integer > 0:
