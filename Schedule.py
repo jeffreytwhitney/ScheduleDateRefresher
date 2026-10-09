@@ -3,6 +3,7 @@ import dateutil
 
 from datetime import datetime, timedelta
 import RefreshLogger
+import RemoteFile
 import logging
 import xlwings
 
@@ -34,6 +35,7 @@ class Schedule:
     _machine_name: str
     _min_completion_date: datetime = datetime.now() - timedelta(days=365)
     _logger: logging.Logger
+    _local_copy_path: str | None = None
 
     def __init__(self, schedule_config: ScheduleInfo) -> None:
         self._logger = RefreshLogger.get_logger('scheduleLogger')
@@ -46,12 +48,27 @@ class Schedule:
             self._workbook.close()
         if self._excel_application:
             self._excel_application.quit()
+        self._delete_local_copy()
+
+    def _delete_local_copy(self) -> None:
+        if self._local_copy_path:
+            RemoteFile.delete_local_file(self._local_copy_path)
+            self._local_copy_path = None
 
     def _load_schedule(self) -> None:
         self._logger.debug(f"Loading Schedule:{self._schedule_info.import_name}")
         xlapp = xlwings.App(visible=False)
         self._excel_application = xlapp
         filepath = self._schedule_info.file_path
+        if self._schedule_info.is_remote:
+            try:
+                filepath = RemoteFile.download_to_working_dir(filepath)
+                self._local_copy_path = filepath
+                self._schedule_info.file_path = filepath
+            except Exception:
+                self._logger.error(f"Could not download remote schedule:{filepath}", exc_info=True)
+                xlapp.quit()
+                raise ScheduleFileNotFoundError(self._schedule_info.file_path)
         sheetname = self._schedule_info.sheet_name
         partnumber_address = self._schedule_info.starting_cell_address
         completion_offset = self._schedule_info.completion_date_cell_offset
@@ -60,6 +77,7 @@ class Schedule:
         if not os.path.isfile(filepath):
             self._logger.error(f"Schedule File Not Found:{filepath}")
             xlapp.quit()
+            self._delete_local_copy()
             raise ScheduleFileNotFoundError(self._schedule_info.file_path)
 
         xlbook = xlwings.Book(filepath, update_links=False, read_only=True)
@@ -96,6 +114,7 @@ class Schedule:
                 self._workbook.close()
             if self._excel_application:
                 self._excel_application.quit()
+            self._delete_local_copy()
             raise ScheduleBadHeadersError(self._schedule_info.file_path)
 
     @property

@@ -7,7 +7,6 @@ from typing import List
 class ScheduleInfo:
     schedule_id: int
     is_active: bool
-    is_remote: bool
     site_id: int
     import_name: str
     file_path: str
@@ -19,6 +18,7 @@ class ScheduleInfo:
     task_name_delimiter: str
     completion_date_delimiter: str
     do_part_name_trimming: int
+    is_remote: bool = False
 
 
 def get_schedule_info_records(site_id: int) -> List[ScheduleInfo]:
@@ -53,7 +53,6 @@ def _create_schedule_from_record(record: dict) -> ScheduleInfo:
     config = ScheduleInfo(
         schedule_id=record['ID'],
         is_active=record['IsActive'],
-        is_remote=record['IsRemote'],
         site_id=record['SiteID'],
         import_name=record['ImportName'],
         file_path=record['FilePath'],
@@ -64,22 +63,8 @@ def _create_schedule_from_record(record: dict) -> ScheduleInfo:
         machine_name_offset_up=record['MachineNameOffsetUp'],
         task_name_delimiter=record['TaskNameDelimiter'],
         completion_date_delimiter=record['CompletionDateDelimeter'],
-        do_part_name_trimming=record['DoPartNameTrimming']
+        do_part_name_trimming=record['DoPartNameTrimming'],
+        is_remote=bool(record['IsRemote'])
     )
 
-    return ScheduleInfo(
-        config.schedule_id,
-        config.is_active,
-        config.is_remote,
-        config.site_id,
-        config.import_name,
-        config.file_path,
-        config.sheet_name,
-        config.starting_cell_address,
-        config.completion_date_cell_offset,
-        config.machine_name_offset_left,
-        config.machine_name_offset_up,
-        config.task_name_delimiter,
-        config.completion_date_delimiter,
-        config.do_part_name_trimming
-    )
+    return config

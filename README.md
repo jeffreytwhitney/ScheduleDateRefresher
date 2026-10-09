@@ -8,7 +8,7 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
 - Python 3.10 or later
 - Microsoft Excel desktop (the schedules are read through `xlwings`)
 - Access to the SQL Server database and the tables, views, and stored procedures used by the application
-- Python packages: `psutil`, `pymssql`, `python-dateutil`, `python-dotenv`, `pywin32`, and `xlwings`
+- Python packages: `msal`, `psutil`, `pymssql`, `python-dateutil`, `python-dotenv`, `pywin32`, `requests`, and `xlwings`
 
 ## Setup
 
@@ -21,9 +21,13 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
    DB_USER=your-database-user
    DB_PASSWORD=your-database-password
    DB_NAME=your-database-name
+   CLIENT_ID=your-microsoft-application-client-id
+   AUTHORITY=https://login.microsoftonline.com/organizations
+   SCOPES=Files.Read
+   DEST_DIR=C:\TEST
    ```
 
-   Add the site and run settings to the same file (see Configuration below). Keep credentials private; do not commit `.env`.
+   For remote schedules, configure the Microsoft Entra public-client application ID and authority for your organization. `SCOPES` is a space- or comma-separated list of Microsoft Graph delegated permissions. Sign-in uses the device-code flow. `DEST_DIR` is where downloaded schedules are temporarily stored and defaults to the application's `working` directory when omitted. Keep credentials private; do not commit `.env`.
 4. Set the target site and run behavior in `.env`. The active schedules, Excel file paths, sheet names, and cell layouts are read from SQL Server.
 5. Ensure the configured Excel files are accessible to the Windows account running the program.
 
@@ -39,7 +43,7 @@ Settings are read from environment variables, loaded from `.env` in the applicat
 | `AUTO_NOT_SCHEDULED` | `1` enables marking tasks not represented in schedules as "Not Scheduled" when task link records were found |
 | `LOG_LEVEL_<LOGGERNAME>` | `DEBUG` or `INFO` per logger, e.g. `LOG_LEVEL_TASKLOGGER` (default `INFO`) |
 
-The application reads database connection values from the environment (or `.env`). Schedule-specific settings, including file path, worksheet, part-number cell, date offset, and delimiters, come from active records in `tblLinkedTableNames`.
+The application reads database connection values from the environment (or `.env`). Schedule-specific settings, including file path, worksheet, part-number cell, date offset, and delimiters, come from active records in `tblLinkedTableNames`. For SharePoint schedules, set the record's remote flag and use its SharePoint sharing URL as `FilePath`; the downloaded local path is assigned to `ScheduleInfo.file_path` while that schedule is being processed.
 
 ## Run
 
