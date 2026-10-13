@@ -6,6 +6,11 @@ import RefreshLogger
 import logging
 
 
+def sql_datetime(value: datetime) -> str:
+    # Language-independent format accepted by datetime columns (no microseconds).
+    return value.strftime('%Y%m%d %H:%M:%S')
+
+
 def prev_weekday(adate):
     adate -= timedelta(days=1)
     while adate.weekday() > 4:
@@ -174,7 +179,7 @@ class TaskWriter:
                 try:
                     db.execute_statement(sql_statement)
                 except Exception as e:
-                    self._logger.error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
+                    self._logger.error(f"Database error while updating Task Record: {e!r}. SQL statement: {sql_statement}")
 
     def write_updated_tasks_to_database(self) -> None:
 
@@ -183,20 +188,20 @@ class TaskWriter:
                 if task.statusid == 7:
                     self._logger.debug(f"Updating 'Not Schedled' task '{task.taskname}' to due "
                                        f"date {task.duedate} and setting status to 'Not Started'.")
-                    sql_statement = (f"UPDATE tblTask SET StatusID = 1, DueDate = '{task.duedate}', "
-                                     f"ScheduledDueDate = '{task.scheduledduedate}', "
+                    sql_statement = (f"UPDATE tblTask SET StatusID = 1, DueDate = '{sql_datetime(task.duedate)}', "
+                                     f"ScheduledDueDate = '{sql_datetime(task.scheduledduedate)}', "
                                      f"UpdateUserID = '{self._automated_user_id}', "
                                      f"UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}")
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:
-                        self._logger.error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
+                        self._logger.error(f"Database error while updating Task Record: {e!r}. SQL statement: {sql_statement}")
                 else:
                     self._logger.debug(f"Updating task '{task.taskname}' to due date {task.duedate}.")
-                    sql_statement = (f"UPDATE tblTask SET DueDate = '{task.duedate}', ScheduledDueDate = '{task.scheduledduedate}', "
+                    sql_statement = (f"UPDATE tblTask SET DueDate = '{sql_datetime(task.duedate)}', ScheduledDueDate = '{sql_datetime(task.scheduledduedate)}', "
                                      f"UpdateUserID = '{self._automated_user_id}', "
                                      f"UpdatedTimestamp = CURRENT_TIMESTAMP WHERE ID = {task.task_id}")
                     try:
                         db.execute_statement(sql_statement)
                     except Exception as e:
-                        self._logger.error(f"Database error while updating Task Record. SQL statement: {sql_statement}")
+                        self._logger.error(f"Database error while updating Task Record: {e!r}. SQL statement: {sql_statement}")

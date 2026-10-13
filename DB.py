@@ -4,14 +4,18 @@ from typing import List, Dict, Any
 import pymssql
 from dotenv import load_dotenv
 
-load_dotenv()
+import sys
+from pathlib import Path
+
+_APP_DIR = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent
+load_dotenv(_APP_DIR / '.env')
 
 
 class DatabaseConnection:
-    DB_SERVER = os.getenv('DB_SERVER', '')
-    DB_USER = os.getenv('DB_USER', '')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
-    DB_NAME = os.getenv('DB_NAME', '')
+    DB_SERVER = os.getenv('SDR_DB_SERVER', '')
+    DB_USER = os.getenv('SDR_DB_USER', '')
+    DB_PASSWORD = os.getenv('SDR_DB_PASSWORD', '')
+    DB_NAME = os.getenv('SDR_DB_NAME', '')
 
     def __init__(self, is_scalar: bool = False):
         self.conn = None
@@ -64,7 +68,7 @@ class DatabaseConnection:
 class WindowsAuthDatabaseConnection:
     """Database connection class that uses Windows authentication."""
     
-    DB_SERVER = os.getenv('DB_SERVER', '')
+    DB_SERVER = os.getenv('SDR_DB_SERVER', '')
 
     def __init__(self, database_name: str, is_scalar: bool = False):
         """

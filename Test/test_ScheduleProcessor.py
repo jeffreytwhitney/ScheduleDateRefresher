@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 import pytest
@@ -73,6 +74,7 @@ def test_process_schedule(monkeypatch):
     schedule_info_record: ScheduleInfo = make_schedule_info(1, True, 1, "Ortho Mill Dept 1", "OrthoMill1.xlsx",
                                                             "Schedule", "D6", 23, -3, -2, "#, PART #", "COMP DATE", True)
     schedule = Schedule(schedule_info_record)
+    monkeypatch.setattr(Schedule, "_min_completion_date", datetime(2000, 1, 1))
     import_record_writer = FakeImportRecordWriter(1)
     task_name_record_writer = FakeTaskNameLinkWriter(1)
     schedule_processor = ScheduleDateRefresher.ScheduleProcessor(1, schedule, import_record_writer, task_name_record_writer)

@@ -1,3 +1,4 @@
+
 import logging
 import os
 import shutil
@@ -173,7 +174,7 @@ def process_schedules():
         except Exception:
             error_count += 1
             error_message = f"Processing error for schedule {schedule_info.import_name}."
-            logger.error(error_message)
+            logger.error(error_message, exc_info=True)
             dblogger.error(error_message, extra={"runid":      {schedule_run.schedule_run_id},
                                                  "scheduleid": {schedule_info.schedule_id}})
 

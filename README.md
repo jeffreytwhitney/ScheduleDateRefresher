@@ -38,7 +38,7 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
    RUN_LOCAL=1
    ```
 
-   `CLIENT_ID` identifies the app registration, `CLIENT_SECRET` authenticates the app, and `TENANT_ID` selects the Microsoft Entra tenant. The authority is constructed from the tenant ID, and the token request uses the Graph `.default` scope, so Graph application permissions are configured on the app registration rather than in `.env`. Keep credentials private; do not commit `.env`.
+   `SDR_CLIENT_ID` identifies the app registration, `SDR_CLIENT_SECRET` authenticates the app, and `SDR_TENANT_ID` selects the Microsoft Entra tenant. The authority is constructed from the tenant ID, and the token request uses the Graph `.default` scope, so Graph application permissions are configured on the app registration rather than in `.env`. Keep credentials private; do not commit `.env`.
 4. Set the target site and run behavior in `.env`. The active schedules, Excel file paths, sheet names, and cell layouts are read from SQL Server.
 5. Ensure the configured Excel files are accessible to the Windows account running the program.
 
@@ -48,18 +48,18 @@ Settings are read from environment variables, loaded from `.env` in the applicat
 
 | Variable | Purpose |
 | --- | --- |
-| `DB_SERVER` | SQL Server host or instance name |
-| `DB_NAME` | Database name |
-| `DB_USER` | SQL Server login |
-| `DB_PASSWORD` | SQL Server login password |
-| `CLIENT_ID` | Microsoft Entra app registration's application (client) ID; required for remote schedules |
-| `CLIENT_SECRET` | App registration client secret; required for remote schedules |
-| `TENANT_ID` | Microsoft Entra tenant ID used to construct the sign-in authority; required for remote schedules |
-| `SITE` | SQL Server site ID to process |
-| `AUTOMATED_USER_ID` | Employee number used for automated task updates |
-| `AUTO_NOT_SCHEDULED` | `1` enables marking tasks not represented in schedules as "Not Scheduled" when task link records were found |
-| `RUN_LOCAL` | `1` creates a local run entry and waits for confirmation before exit; `0` processes the scheduled run and closes Excel if Excel is already running |
-| `LOG_LEVEL_REFRESHLOGGER`, `LOG_LEVEL_IMPORTLOGGER`, `LOG_LEVEL_SCHEDULELOGGER`, `LOG_LEVEL_SCHEDULEPROCESSORLOGGER`, `LOG_LEVEL_SCHEDULERUNLOGGER`, `LOG_LEVEL_TASKIDLINKLOGGER`, `LOG_LEVEL_TASKNAMELINKLOGGER`, `LOG_LEVEL_TASKLOGGER` | Set each logger's level, typically `DEBUG`, `INFO`, `WARNING`, or `ERROR` (default `INFO`) |
+| `SDR_DB_SERVER` | SQL Server host or instance name |
+| `SDR_DB_NAME` | Database name |
+| `SDR_DB_USER` | SQL Server login |
+| `SDR_DB_PASSWORD` | SQL Server login password |
+| `SDR_CLIENT_ID` | Microsoft Entra app registration's application (client) ID; required for remote schedules |
+| `SDR_CLIENT_SECRET` | App registration client secret; required for remote schedules |
+| `SDR_TENANT_ID` | Microsoft Entra tenant ID used to construct the sign-in authority; required for remote schedules |
+| `SDR_SITE` | SQL Server site ID to process |
+| `SDR_AUTOMATED_USER_ID` | Employee number used for automated task updates |
+| `SDR_AUTO_NOT_SCHEDULED` | `1` enables marking tasks not represented in schedules as "Not Scheduled" when task link records were found |
+| `SDR_RUN_LOCAL` | `1` creates a local run entry and waits for confirmation before exit; `0` processes the scheduled run and closes Excel if Excel is already running |
+| `SDR_LOG_LEVEL_REFRESHLOGGER`, `SDR_LOG_LEVEL_IMPORTLOGGER`, `SDR_LOG_LEVEL_SCHEDULELOGGER`, `SDR_LOG_LEVEL_SCHEDULEPROCESSORLOGGER`, `SDR_LOG_LEVEL_SCHEDULERUNLOGGER`, `SDR_LOG_LEVEL_TASKIDLINKLOGGER`, `SDR_LOG_LEVEL_TASKNAMELINKLOGGER`, `SDR_LOG_LEVEL_TASKLOGGER` | Set each logger's level, typically `DEBUG`, `INFO`, `WARNING`, or `ERROR` (default `INFO`) |
 | `DEST_DIR` *(optional)* | Temporary destination for downloaded remote schedules; defaults to the application's `working` directory |
 
 The application reads database connection values from the environment (or `.env`). Schedule-specific settings, including file path, worksheet, part-number cell, date offset, and delimiters, come from active records in `tblLinkedTableNames`. For SharePoint schedules, set the record's remote flag and use its SharePoint sharing URL as `FilePath`; the downloaded local path is assigned to `ScheduleInfo.file_path` while that schedule is being processed.

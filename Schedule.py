@@ -1,5 +1,5 @@
 import os
-import dateutil
+import dateutil.parser
 
 from datetime import datetime, timedelta
 import RefreshLogger

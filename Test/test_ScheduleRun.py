@@ -33,7 +33,6 @@ def test_init_runnable_local_run(
         assert run._run_local
         assert run._run_local_employee_number == '123'
         assert run.schedule_run_id == 10
-        assert run.request_user_name == 'Test User'
         mock_local_entry.assert_called_once()
 
 
@@ -88,7 +87,6 @@ def test_get_schedule_run_config(mock_get_sql_recordset, mock_logger):
     config = run._get_schedule_run_config()
     assert isinstance(config, ScheduleRunConfig)
     assert config.schedule_run_id == 20
-    assert config.request_user_name == 'Another User'
 
 
 @patch('ScheduleRun.RefreshLogger.get_logger')

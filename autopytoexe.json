@@ -64,6 +64,7 @@
  ],
  "nonPyinstallerOptions": {
   "increaseRecursionLimit": true,
-  "manualArguments": ""
+  "manualArguments": "",
+  "outputDirectory": "C:/Users/JTWhitney/PycharmProjects/ScheduleDateRefresher/output"
  }
 }
