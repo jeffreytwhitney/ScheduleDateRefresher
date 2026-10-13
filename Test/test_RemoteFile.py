@@ -147,3 +147,27 @@ def test_live_download_from_sharepoint(monkeypatch, tmp_path):
 
     assert os.path.dirname(local_path) == str(tmp_path)
     assert Path(local_path).stat().st_size > 0
+
+
+@pytest.mark.skipif(
+    not RemoteFile.Config.get_env_value("CLIENT_ID"),
+    reason="Microsoft Graph credentials not configured in .env",
+)
+def test_live_fallback_recovery_when_sharing_id_is_invalid(monkeypatch, tmp_path):
+    monkeypatch.setattr(RemoteFile.Config, "get_env_value", (
+        lambda key, default="", _orig=RemoteFile.Config.get_env_value:
+        str(tmp_path) if key == "DEST_DIR" else _orig(key, default)
+    ))
+
+    # A URL with an invalid/outdated GUID that fails on sharing endpoint
+    broken_guid_url = (
+        "https://cretexcompanies.sharepoint.com/:x:/r/sites/RMS-Additive-Shared_Files/"
+        "_layouts/15/Doc.aspx?sourcedoc=%7B0BAD2D8D-69C8-4A4C-8C45-9E86779A2D89%7D"
+        "&file=Additive%20Mill%20SCHEDULE%201.xlsm&action=default&mobileredirect=true&wdwpf=doclib-c"
+    )
+
+    local_path = RemoteFile.download_to_working_dir(broken_guid_url)
+
+    assert os.path.dirname(local_path) == str(tmp_path)
+    assert os.path.basename(local_path) == "Additive Mill SCHEDULE 1.xlsm"
+    assert Path(local_path).stat().st_size > 0

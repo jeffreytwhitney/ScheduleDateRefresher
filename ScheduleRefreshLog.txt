@@ -138,3 +138,15 @@
 2026-07-23 07:18:39,679 - refreshLogger - INFO - Writing 67 task id link records to the database
 2026-07-23 07:18:39,975 - refreshLogger - INFO - Updating 47 task records
 2026-07-23 07:18:40,664 - refreshLogger - INFO - Done processing schedules.
+2026-10-13 06:51:53,777 - scheduleLogger - ERROR - Could not download remote schedule:https://cretexcompanies.sharepoint.com/:x:/r/sites/RMS-Additive-Shared_Files/_layouts/15/Doc.aspx?sourcedoc=%7B0BAD2D8D-69C8-4A4C-8C45-9E86779A2D89%7D&file=Additive%20Mill%20SCHEDULE%201.xlsm&action=default&mobileredirect=true&wdwpf=doclib-c
+Traceback (most recent call last):
+  File "C:\Users\jtwhitney\PycharmProjects\ScheduleDateRefresher\Schedule.py", line 65, in _load_schedule
+    filepath = RemoteFile.download_to_working_dir(filepath)
+  File "C:\Users\jtwhitney\PycharmProjects\ScheduleDateRefresher\RemoteFile.py", line 85, in download_to_working_dir
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\jtwhitney\AppData\Roaming\Python\Python314\site-packages\requests\models.py", line 1167, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 403 Client Error: Forbidden for url: https://graph.microsoft.com/v1.0/shares/u!aHR0cHM6Ly9jcmV0ZXhjb21wYW5pZXMuc2hhcmVwb2ludC5jb20vOng6L3Ivc2l0ZXMvUk1TLUFkZGl0aXZlLVNoYXJlZF9GaWxlcy9fbGF5b3V0cy8xNS9Eb2MuYXNweD9zb3VyY2Vkb2M9JTdCMEJBRDJEOEQtNjlDOC00QTRDLThDNDUtOUU4Njc3OUEyRDg5JTdEJmZpbGU9QWRkaXRpdmUlMjBNaWxsJTIwU0NIRURVTEUlMjAxLnhsc20mYWN0aW9uPWRlZmF1bHQmbW9iaWxlcmVkaXJlY3Q9dHJ1ZSZ3ZHdwZj1kb2NsaWItYw/driveItem/content
+2026-10-13 07:13:48,645 - scheduleLogger - WARNING - Auto-recovered remote schedule for 'Additive Mill SCHEDULE 1.xlsm' from library 'Shared Documents'
+2026-10-13 07:14:20,263 - scheduleLogger - WARNING - Auto-recovered remote schedule for 'Additive Mill SCHEDULE 1.xlsm' from library 'Shared Documents'

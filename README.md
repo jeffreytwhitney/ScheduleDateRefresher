@@ -14,16 +14,16 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
 
 1. Clone the repository and create/activate a Python virtual environment.
 2. Install the packages listed above. To run the tests, also install `pytest`.
-3. Copy `.env_example` to `.env` in the repository root, then replace the database and Microsoft Entra placeholders with your values. The file includes the available application settings:
+3. Copy `.env_example` to `.env` in the repository root, then replace the database and Microsoft Entra placeholders with your values. For remote schedules, configure an app registration with the required Microsoft Graph **application permissions** and grant admin consent. The app uses the client-credentials flow; no user sign-in is required.
 
    ```dotenv
    DB_SERVER=your-sql-server
    DB_NAME=your-database-name
    DB_USER=your-database-user
    DB_PASSWORD=your-database-password
+   CLIENT_SECRET=your-microsoft-application-client-secret
+   TENANT_ID=your-microsoft-entra-tenant-id
    CLIENT_ID=your-microsoft-application-client-id
-   AUTHORITY=https://login.microsoftonline.com/organizations
-   SCOPES=Files.Read
    SITE=1
    AUTOMATED_USER_ID=9999
    AUTO_NOT_SCHEDULED=0
@@ -38,7 +38,7 @@ Schedule Date Refresher reads active Excel schedules configured for a site, matc
    RUN_LOCAL=1
    ```
 
-   For remote schedules, configure the Microsoft Entra public-client application ID and authority for your organization. `SCOPES` is a space- or comma-separated list of Microsoft Graph delegated permissions. Sign-in uses the device-code flow. Keep credentials private; do not commit `.env`.
+   `CLIENT_ID` identifies the app registration, `CLIENT_SECRET` authenticates the app, and `TENANT_ID` selects the Microsoft Entra tenant. The authority is constructed from the tenant ID, and the token request uses the Graph `.default` scope, so Graph application permissions are configured on the app registration rather than in `.env`. Keep credentials private; do not commit `.env`.
 4. Set the target site and run behavior in `.env`. The active schedules, Excel file paths, sheet names, and cell layouts are read from SQL Server.
 5. Ensure the configured Excel files are accessible to the Windows account running the program.
 
@@ -52,9 +52,9 @@ Settings are read from environment variables, loaded from `.env` in the applicat
 | `DB_NAME` | Database name |
 | `DB_USER` | SQL Server login |
 | `DB_PASSWORD` | SQL Server login password |
-| `CLIENT_ID` | Microsoft Entra public-client application ID, required for remote schedules |
-| `AUTHORITY` | Microsoft identity authority used for sign-in |
-| `SCOPES` | Microsoft Graph delegated permissions; separate multiple scopes with spaces or commas |
+| `CLIENT_ID` | Microsoft Entra app registration's application (client) ID; required for remote schedules |
+| `CLIENT_SECRET` | App registration client secret; required for remote schedules |
+| `TENANT_ID` | Microsoft Entra tenant ID used to construct the sign-in authority; required for remote schedules |
 | `SITE` | SQL Server site ID to process |
 | `AUTOMATED_USER_ID` | Employee number used for automated task updates |
 | `AUTO_NOT_SCHEDULED` | `1` enables marking tasks not represented in schedules as "Not Scheduled" when task link records were found |
