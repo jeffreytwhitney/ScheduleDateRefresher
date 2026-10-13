@@ -1,4 +1,5 @@
 import os
+import pytest
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -7,34 +8,25 @@ import Schedule
 from ScheduleInfo import ScheduleInfo
 
 
-def test_download_uses_graph_device_auth_and_configured_destination(monkeypatch, tmp_path):
+def test_download_uses_graph_client_credentials_and_configured_destination(monkeypatch, tmp_path):
     settings = {
         "CLIENT_ID": "client-id",
-        "AUTHORITY": "https://login.microsoftonline.com/organizations",
-        "SCOPES": "Files.Read",
+        "CLIENT_SECRET": "client-secret",
+        "TENANT_ID": "tenant-id",
         "DEST_DIR": str(tmp_path),
     }
     monkeypatch.setattr(RemoteFile.Config, "get_env_value", lambda key, default="": settings.get(key, default))
+    monkeypatch.setattr(RemoteFile, "_MSAL_APPLICATION", None)
 
     class FakeApplication:
-        def __init__(self, client_id, authority):
+        def __init__(self, client_id, client_credential, authority):
             assert client_id == "client-id"
-            assert authority == settings["AUTHORITY"]
+            assert client_credential == "client-secret"
+            assert authority == "https://login.microsoftonline.com/tenant-id"
 
-        def get_accounts(self):
-            return []
-
-        def acquire_token_silent(self, scopes, account):
-            raise AssertionError("No cached account is expected.")
-
-        def initiate_device_flow(self, scopes):
-            assert scopes == ["Files.Read"]
-            return {"user_code": "ABC", "message": "Sign in"}
-
-        def acquire_token_by_device_flow(self, flow):
-            assert flow["user_code"] == "ABC"
+        def acquire_token_for_client(self, scopes):
+            assert scopes == ["https://graph.microsoft.com/.default"]
             return {"access_token": "access-token"}
-
     class FakeResponse:
         def __enter__(self):
             return self
@@ -54,7 +46,7 @@ def test_download_uses_graph_device_auth_and_configured_destination(monkeypatch,
         requests.update(url=url, headers=headers, stream=stream, timeout=timeout)
         return FakeResponse()
 
-    monkeypatch.setattr(RemoteFile.msal, "PublicClientApplication", FakeApplication)
+    monkeypatch.setattr(RemoteFile.msal, "ConfidentialClientApplication", FakeApplication)
     monkeypatch.setattr(RemoteFile.requests, "get", fake_get)
     share_url = (
         "https://cretexcompanies.sharepoint.com/:x:/r/sites/RMS-Additive-Shared_Files/"
@@ -138,3 +130,20 @@ def test_remote_schedule_info_uses_downloaded_local_path(monkeypatch, tmp_path):
 
     assert info.file_path == local_path
     schedule.close()
+
+
+@pytest.mark.skipif(
+    not RemoteFile.Config.get_env_value("TEST_REMOTE_URL"),
+    reason="Set TEST_REMOTE_URL in .env to run the live SharePoint download test.",
+)
+def test_live_download_from_sharepoint(monkeypatch, tmp_path):
+    url = RemoteFile.Config.get_env_value("TEST_REMOTE_URL")
+    monkeypatch.setattr(RemoteFile.Config, "get_env_value", (
+        lambda key, default="", _orig=RemoteFile.Config.get_env_value:
+        str(tmp_path) if key == "DEST_DIR" else _orig(key, default)
+    ))
+
+    local_path = RemoteFile.download_to_working_dir(url)
+
+    assert os.path.dirname(local_path) == str(tmp_path)
+    assert Path(local_path).stat().st_size > 0

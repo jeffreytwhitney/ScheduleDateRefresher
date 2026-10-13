@@ -33,38 +33,29 @@ def _get_access_token() -> str:
     global _MSAL_APPLICATION, _MSAL_APPLICATION_CONFIG
 
     client_id = Config.get_env_value("CLIENT_ID")
-    authority = Config.get_env_value("AUTHORITY")
-    scopes = [
-        scope.strip()
-        for scope in Config.get_env_value("SCOPES", "Files.Read").replace(",", " ").split()
-    ]
+    client_secret = Config.get_env_value("CLIENT_SECRET")
+    tenant_id = Config.get_env_value("TENANT_ID")
     if not client_id:
         raise ValueError("CLIENT_ID must be configured in .env to download remote schedules.")
-    if not authority:
-        raise ValueError("AUTHORITY must be configured in .env to download remote schedules.")
-    if not scopes:
-        raise ValueError("SCOPES must include at least one Microsoft Graph permission.")
+    if not client_secret:
+        raise ValueError("CLIENT_SECRET must be configured in .env to download remote schedules.")
+    if not tenant_id:
+        raise ValueError("TENANT_ID must be configured in .env to download remote schedules.")
 
-    application_config = (client_id, authority)
+    authority = f"https://login.microsoftonline.com/{tenant_id}"
+    application_config = (client_id, client_secret, authority)
     if _MSAL_APPLICATION is None or _MSAL_APPLICATION_CONFIG != application_config:
-        _MSAL_APPLICATION = msal.PublicClientApplication(client_id, authority=authority)
+        _MSAL_APPLICATION = msal.ConfidentialClientApplication(
+            client_id, client_credential=client_secret, authority=authority)
         _MSAL_APPLICATION_CONFIG = application_config
-    application = _MSAL_APPLICATION
-    accounts = application.get_accounts()
-    result = application.acquire_token_silent(scopes, account=accounts[0]) if accounts else None
-    if not result:
-        flow = application.initiate_device_flow(scopes=scopes)
-        if "user_code" not in flow:
-            raise RuntimeError(f"Could not start Microsoft sign-in: {flow.get('error_description', flow)}")
-        print(flow["message"])
-        result = application.acquire_token_by_device_flow(flow)
 
+    # App-only auth always uses the .default scope; permissions are granted in Azure.
+    result = _MSAL_APPLICATION.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
     access_token = result.get("access_token")
     if not access_token:
         details = result.get("error_description") or result.get("error") or result
         raise RuntimeError(f"Microsoft sign-in failed: {details}")
     return access_token
-
 
 def _get_share_id(url: str) -> str:
     encoded_url = base64.urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
