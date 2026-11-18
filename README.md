@@ -74,6 +74,10 @@ python ScheduleDateRefresher.py
 
 The program processes eligible schedule runs for the configured site, reads active Excel schedules, updates task dates and link records, and logs to `ScheduleRefreshLog.txt`. It requires a working SQL Server connection and may write run, task, and schedule-log records to that database.
 
+Every call to `process_schedules()` checks the site's active schedules, even when no run is due. It checks that each file exists and that the configured worksheet has the expected task-name and completion-date headers. A positive completion-date offset moves right on the same row (for example, `D3` plus `10` is `N3`).
+
+Schedule problems are recorded in `dbo.tblScheduleChangeLog` with `EmailSent = 0` and `EmailSentTimestamp = NULL`. The table must exist and the application needs read and insert access. The checker adds at most one row per schedule per SQL Server calendar day and skips insertion if that schedule already has an unsent row from any day. Email delivery is handled separately.
+
 ## Tests
 
 Run the test suite with:

@@ -14,6 +14,18 @@ def _get_alpha_portion(s):
     return ''.join([char for char in s if char.isalpha()])
 
 
+def task_name_delimiters(delimiter: str) -> list[str]:
+    return delimiter.upper().split(', ')
+
+
+def matches_task_name_delimiter(value: object, delimiters: list[str]) -> bool:
+    return value is not None and str(value).upper().strip() in delimiters
+
+
+def matches_completion_date_delimiter(value: object, delimiter: str) -> bool:
+    return ("" if value is None else str(value)).upper() == delimiter.upper()
+
+
 class ScheduleFileNotFoundError(Exception):
     pass
 
@@ -72,7 +84,7 @@ class Schedule:
         sheetname = self._schedule_info.sheet_name
         partnumber_address = self._schedule_info.starting_cell_address
         completion_offset = self._schedule_info.completion_date_cell_offset
-        self._valid_part_delimiters = self._schedule_info.task_name_delimiter.upper().split(', ')
+        self._valid_part_delimiters = task_name_delimiters(self._schedule_info.task_name_delimiter)
 
         if not os.path.isfile(filepath):
             self._logger.error(f"Schedule File Not Found:{filepath}")
@@ -171,14 +183,12 @@ class Schedule:
 
     @property
     def is_part_number_delimiter(self) -> bool:
-        if self._partnumber_cell.value is None:
-            return False
-        part_number_value = str(self._partnumber_cell.value).upper().strip()
-        return part_number_value in self._valid_part_delimiters
+        return matches_task_name_delimiter(self._partnumber_cell.value, self._valid_part_delimiters)
 
     @property
     def is_completion_date_delimiter(self) -> bool:
-        return self.completion_date_value.upper() == self._schedule_info.completion_date_delimiter.upper()
+        return matches_completion_date_delimiter(
+            self._completion_date_cell.value, self._schedule_info.completion_date_delimiter)
 
     @property
     def machine_name(self) -> str:

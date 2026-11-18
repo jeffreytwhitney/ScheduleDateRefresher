@@ -56,8 +56,8 @@ class DatabaseConnection:
         self.cursor.execute(sql)
         return self.cursor.fetchone()[0]
 
-    def execute_statement(self, sql: str) -> None:
-        self.cursor.execute(sql)
+    def execute_statement(self, sql: str, params: tuple[Any, ...] | None = None) -> None:
+        self.cursor.execute(sql, params)
         self.conn.commit()
 
     def execute_stored_procedure(self, procedure_name: str, params: tuple[Any, ...] | None = None) -> None:
@@ -130,9 +130,9 @@ def get_sql_scalar(sql: str) -> Any:
         return db.fetch_scalar(sql)
 
 
-def execute_sql_statement(sql: str) -> None:
+def execute_sql_statement(sql: str, params: tuple[Any, ...] | None = None) -> None:
     with DatabaseConnection(False) as db:
-        db.execute_statement(sql)
+        db.execute_statement(sql, params)
 
 
 def execute_stored_procedure(procedure_name: str, params: tuple[Any, ...] | None = None) -> None:
@@ -165,4 +165,3 @@ def execute_stored_procedure_windows_auth(
     """Execute a stored procedure with Windows authentication."""
     with WindowsAuthDatabaseConnection(database_name, is_scalar=False) as db:
         db.execute_stored_procedure(procedure_name, params)
-

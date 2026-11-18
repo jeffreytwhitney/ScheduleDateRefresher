@@ -13,6 +13,7 @@ import Config
 import RefreshLogger
 import Schedule
 import ScheduleInfo
+from CheckSchedule import check_schedule
 from ImportRecords import ImportRecordWriter
 from ScheduleProcessor import ScheduleProcessor
 from ScheduleRun import ScheduleRun
@@ -110,6 +111,7 @@ def process_schedules():
     schedule-related data in the database. Handles errors specific to missing files or
     incorrect file headers while logging key events and statuses throughout the operation. Also
     manages task updates and ensures the synchronization of various task-related records.
+    Checks every active schedule for file and header changes even when no run is due.
 
     :raises Schedule.ScheduleBadHeadersError: If a schedule file has incorrect or changed headers.
     :raises Schedule.ScheduleFileNotFoundError: If a schedule file is missing or cannot be found.
@@ -128,6 +130,13 @@ def process_schedules():
     auto_not_scheduled = int(Config.get_env_value("AUTO_NOT_SCHEDULED", "0"))
     logger.debug(f"Auto Not Scheduled: {auto_not_scheduled}")
 
+    schedule_info_records = ScheduleInfo.get_schedule_info_records(site_id)
+    for schedule_info in schedule_info_records:
+        try:
+            check_schedule(schedule_info)
+        except Exception:
+            logger.exception("Could not check or log changes for schedule %s.", schedule_info.import_name)
+
     schedule_run = ScheduleRun(site_id)
 
     runnable = schedule_run.is_runnable
@@ -137,7 +146,6 @@ def process_schedules():
 
     logger.debug(f"Schedule Run ID: {schedule_run.schedule_run_id}")
     schedule_run.start_run()
-    schedule_info_records = ScheduleInfo.get_schedule_info_records(site_id)
 
     import_record_writer = ImportRecordWriter(site_id)
     task_name_link_writer = TaskNameLinkRecordWriter(site_id)

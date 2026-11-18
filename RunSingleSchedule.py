@@ -15,7 +15,7 @@ from TaskNameLinkRecords import TaskNameLinkRecordWriter
 from Tasks import TaskWriter
 
 # Edit these, then press Run/Debug in PyCharm.
-SCHEDULE = "Additive Mill 1"  # ImportName or ID
+SCHEDULE = "Ortho Lathe 3"  # ImportName or ID
 WRITE_TO_DB = False
 LIST_SCHEDULES = False  # List active schedules and exit
 
